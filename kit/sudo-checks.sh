@@ -11,6 +11,7 @@
 # Slow commands are stopped after a time limit and say "TIMED OUT" in their file.
 
 set -u
+set -C   # noclobber: never write through a pre-planted file or symlink while running as root
 if [ "$(id -u)" -ne 0 ]; then echo "Run with: sudo bash sudo-checks.sh"; exit 1; fi
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -95,7 +96,7 @@ keep_prev() {  # keep_prev <dir>: move a non-empty earlier results folder aside
 fix_parts() {  # fix_parts <dir>: a .txt.part left by an interrupted check becomes a marked .txt
   for _fp in "$1"/*.txt.part; do
     [ -f "$_fp" ] || continue
-    { echo "INCOMPLETE: this check was interrupted"; cat "$_fp"; } 2>/dev/null > "${_fp%.part}" && rm -f "$_fp"
+    { echo "INCOMPLETE: this check was interrupted"; cat "$_fp"; } > "${_fp%.part}" 2>/dev/null && rm -f "$_fp"
   done
 }
 # Each check writes <name>.txt.part and renames it to <name>.txt only when it finishes.

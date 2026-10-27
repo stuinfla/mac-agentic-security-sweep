@@ -86,6 +86,7 @@ case "$ABS" in
   "$UHOME_P/Library/Application Support/"*/NativeMessagingHosts/*) ALLOWED=1 ;;
   "$UHOME_P"/*/NativeMessagingHosts/*.json|/Library/*/NativeMessagingHosts/*.json) ALLOWED=1 ;;
 esac
+if [ "$(id -u)" -eq 0 ]; then case "$ABS" in "$UHOME_P"/*) die "$ABS is in your home folder; run this without sudo so the undo cannot be redirected." ;; esac; fi
 [ "$ALLOWED" -eq 1 ] || die "$ABS is outside the areas this kit may clean; ask for help instead."
 # Allowed .app areas: only the bundle itself, never a file inside an app bundle.
 case "$ABS" in /Applications/*.app/*|"$UHOME_P"/Applications/*.app/*) die "$ABS is inside an app bundle; quarantine the whole .app instead." ;; esac
@@ -190,6 +191,7 @@ if [ ! -f "$UNDO" ]; then
       printf '# Run:  bash quarantine/UNDO.sh\n'
       printf '# System items (quarantined with sudo) have their own undo file; Claude shows its path when it moves one.\n'
       printf 'set -u\n'
+      printf '[ "$(id -u)" -eq 0 ] && { echo "Do NOT run this with sudo. It is for your own items. System items have UNDO-system.sh."; exit 1; }\n'
     } > "$UNDO" || die "cannot write $UNDO; nothing was changed"
   fi
 fi

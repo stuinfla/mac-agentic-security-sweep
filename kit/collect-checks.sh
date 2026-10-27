@@ -22,6 +22,7 @@
 # installed, so no "install developer tools" pop-up appears.
 
 set -u
+set -C   # noclobber
 # Package managers must not auto-update, phone home, or write anything while we list them.
 export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_INSTALL_FROM_API=1 HOMEBREW_NO_ENV_HINTS=1 PIP_DISABLE_PIP_VERSION_CHECK=1 NPM_CONFIG_UPDATE_NOTIFIER=false
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -107,7 +108,7 @@ keep_prev() {  # keep_prev <dir>: move a non-empty earlier results folder aside
 fix_parts() {  # fix_parts <dir>: a .txt.part left by an interrupted check becomes a marked .txt
   for _fp in "$1"/*.txt.part; do
     [ -f "$_fp" ] || continue
-    { echo "INCOMPLETE: this check was interrupted"; cat "$_fp"; } 2>/dev/null > "${_fp%.part}" && rm -f "$_fp"
+    { echo "INCOMPLETE: this check was interrupted"; cat "$_fp"; } > "${_fp%.part}" 2>/dev/null && rm -f "$_fp"
   done
 }
 # Each check writes <name>.txt.part and renames it to <name>.txt only when it finishes.
@@ -420,7 +421,7 @@ run 09c-firefox-extensions 'for f in ~/Library/Application\ Support/Firefox/Prof
 run 09d-safari-extensions 'pluginkit -mAvvv -p com.apple.Safari.web-extension 2>&1; pluginkit -mAvvv -p com.apple.Safari.extension 2>&1'
 
 # ---- Section 10: developer and AI tooling (values redacted; env var NAMES only)
-run 10a-packages 'command -v npm >/dev/null && { echo "== npm global"; with_timeout 60 npm ls -g --depth=0 2>&1; echo "== npm registry"; with_timeout 20 npm config get registry; }; echo "== .npmrc (auth lines removed)"; grep -viE "_auth|token|password" ~/.npmrc 2>&1; echo "== pip --user"; need pip3 && with_timeout 60 pip3 list --user 2>&1 | head -100; command -v pipx >/dev/null && { echo "== pipx"; with_timeout 60 pipx list 2>&1; }; command -v brew >/dev/null && { echo "== brew taps"; with_timeout 30 brew tap; }; command -v code >/dev/null && { echo "== VS Code extensions"; with_timeout 60 code --list-extensions --show-versions; }; echo "== git global (credentials in URLs redacted)"; need git && git config --global -l 2>&1 | grep -iE "hook|url|credential" | sed -E "s#://[^/@]+@#://<redacted>@#"'
+run 10a-packages 'need npm && { echo "== npm global"; with_timeout 60 npm ls -g --depth=0 2>&1; echo "== npm registry"; with_timeout 20 npm config get registry; }; echo "== .npmrc (auth lines removed)"; grep -viE "_auth|token|password" ~/.npmrc 2>&1; echo "== pip --user"; need pip3 && with_timeout 60 pip3 list --user 2>&1 | head -100; command -v pipx >/dev/null && { echo "== pipx"; with_timeout 60 pipx list 2>&1; }; command -v brew >/dev/null && { echo "== brew taps"; with_timeout 30 brew tap; }; command -v code >/dev/null && { echo "== VS Code extensions"; with_timeout 60 code --list-extensions --show-versions; }; echo "== git global (credentials in URLs redacted)"; need git && git config --global -l 2>&1 | grep -iE "hook|url|credential" | sed -E "s#://[^/@]+@#://<redacted>@#"'
 ai_tool_configs() {
   if usable python3; then
     python3 -I - <<'PY'
@@ -443,7 +444,7 @@ for f in sorted(set(files)):
         for n, s in ((p or {}).get("mcpServers") or {}).items(): servers[proj + " :: " + n] = s
     for n, s in servers.items():
         if not isinstance(s, dict): continue
-        tgt = s.get("command") or str(s.get("url", "")).split("?")[0]
+        tgt = red(s.get("command") or str(s.get("url", "")).split("?")[0])
         print("  mcp:", n, "|", tgt, red(s.get("args", [])), "| env names:", list((s.get("env") or {}).keys()))
     if d.get("hooks"): print("  hooks:", red(json.dumps(d["hooks"]))[:3000])
     perm = d.get("permissions") or {}

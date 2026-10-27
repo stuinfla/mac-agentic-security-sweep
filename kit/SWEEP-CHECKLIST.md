@@ -101,6 +101,7 @@ ls -la ~/Library/LaunchAgents /Library/LaunchAgents /Library/LaunchDaemons /Libr
 ls -la /Users/*/Library/LaunchAgents                       # other accounts' agents
 for f in ~/Library/LaunchAgents/*.plist /Library/LaunchAgents/*.plist /Library/LaunchDaemons/*.plist; do echo "== $f"; plutil -p "$f"; done
 grep -lE 'DYLD_INSERT_LIBRARIES|osascript|curl |base64|/Users/Shared|/tmp/' ~/Library/LaunchAgents/*.plist /Library/LaunchAgents/*.plist /Library/LaunchDaemons/*.plist
+# A /tmp/ hit that is only a log path (StandardOutPath, StandardErrorPath) is normal; the program path is what matters.
 crontab -l; atq; ls -la /etc/periodic/*; cat /etc/periodic.conf.local
 defaults read com.apple.loginwindow | grep -i hook          # sudo-checks.sh also reads root's copy (LoginHook/LogoutHook)
 ls -la /Library/StartupItems ~/Library/Scripts ~/Library/Workflows/Applications/Folder\ Actions

@@ -49,7 +49,7 @@ Works with any Claude account that accepts file uploads.
    ```bash
    cd ~/mac-claude-security-sweep && sudo bash sudo-checks.sh
    ```
-4. Then run the other checks (5–10 minutes, including a 3-minute pause for a second network reading):
+4. Then run the other checks (10–20 minutes, including a 3-minute pause for a second network reading):
    ```bash
    cd ~/mac-claude-security-sweep && bash collect-checks.sh
    ```

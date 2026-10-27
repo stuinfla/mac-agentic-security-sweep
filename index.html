@@ -8,6 +8,11 @@
 <meta name="theme-color" content="#05071a">
 <meta property="og:title" content="Mac Agentic Security Sweep">
 <meta property="og:description" content="A quick, read-only security briefing for your Mac in the age of AI agents.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mac-agentic-security-sweep.vercel.app/">
+<meta property="og:image" content="https://mac-agentic-security-sweep.vercel.app/img/hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2305071a'/%3E%3Cpath d='M16 5l9 3.5v7c0 5.5-3.8 9.6-9 11.5-5.2-1.9-9-6-9-11.5v-7z' fill='none' stroke='%236be4ff' stroke-width='2'/%3E%3Cpath d='M12 16l3 3 5-6' fill='none' stroke='%2346e6a6' stroke-width='2'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -152,7 +157,7 @@ main{position:relative;z-index:2}
 @keyframes line{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
 .term b{color:var(--mint);font-weight:500}
 .term .ok{color:var(--mint)}
-.term .dim{color:#6c78a8}
+.term .dim{color:#8590bd}
 .term .fin{margin-top:.8em;padding:12px 14px;border:1px solid rgba(70,230,166,.4);background:rgba(70,230,166,.07);border-radius:12px;color:#aaf7d6;display:block}
 .rep{display:grid;gap:12px}
 .row{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.025);opacity:0}
@@ -192,7 +197,7 @@ main{position:relative;z-index:2}
 .verify{padding:24px;border-radius:22px;border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .verify h3{font-size:1.4rem;margin-bottom:.3em}
 .verify>p{color:var(--mut);font-size:.95rem;margin-bottom:1em}
-.code{position:relative;margin:10px 0;padding:14px 56px 14px 16px;border-radius:12px;background:#03040f;border:1px solid var(--line);font-family:var(--mono);font-size:clamp(.7rem,1.3vw,.82rem);color:#c7d2ff;overflow-x:auto;white-space:pre;word-break:normal;line-height:1.55}
+.code{position:relative;margin:10px 0;padding:46px 16px 14px;border-radius:12px;background:#03040f;border:1px solid var(--line);font-family:var(--mono);font-size:clamp(.7rem,1.3vw,.82rem);color:#c7d2ff;overflow-x:auto;white-space:pre-wrap;word-break:break-word;line-height:1.55}
 .code small{word-break:normal;overflow-wrap:break-word;display:block;font-family:var(--body);color:var(--mut);font-size:.8rem;margin-bottom:.3em;white-space:normal}
 .copy{position:absolute;top:10px;right:10px;padding:.3em .7em;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:.76rem;font-family:var(--body)}
 .copy:hover{background:rgba(255,255,255,.12)}
@@ -450,15 +455,15 @@ footer a{text-decoration:underline;text-underline-offset:3px}
         <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="15" r="12"/><path d="M8 8l14 14"/></svg><div><strong>The scripts send none of your data anywhere.</strong><span>Two checks ask Apple for update and app-approval status. The report is saved on your Mac and shared with Claude in your session, like any file you show it.</span></div></li>
         <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="13" width="20" height="13" rx="3"/><path d="M10 13V9a5 5 0 0 1 10 0v4"/></svg><div><strong>Secrets are masked.</strong><span>The scripts hide passwords, tokens and keys in what they collect, and list credential files by name.</span></div></li>
         <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15h20M18 8l7 7-7 7"/></svg><div><strong>Fixes wait for your yes.</strong><span>Cleanup happens after the full scan, one item at a time, and each fix comes with an undo step.</span></div></li>
-        <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 9-6 6 6 6M20 9l6 6-6 6M17 6l-4 18"/></svg><div><strong>Open source.</strong><span>Three short scripts and plain-text instructions. Read every line before you run it.</span></div></li>
+        <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 9-6 6 6 6M20 9l6 6-6 6M17 6l-4 18"/></svg><div><strong>Open source.</strong><span>Three readable shell scripts and plain-text instructions. Read every line before you run it.</span></div></li>
       </ul>
       <div class="verify">
         <h3>Check it yourself</h3>
-        <p>Run these in Terminal, in the folder where you unzipped the kit.</p>
-        <div class="code"><small>1. The zip is the one we published. This should print the fingerprint below.</small><span id="c1">shasum -a 256 Mac-Claude-Security-Sweep.zip</span><button class="copy" data-c="c1" aria-label="Copy command 1">Copy</button></div>
-        <div class="code"><small>Expected fingerprint</small><span class="hash">357d113ad6ee43d153e5e8d312c9df3ddb408abc10b77df5e5383f3a22ef56ed</span></div>
+        <p>Run these in Terminal after the Claude prompt has unpacked the kit. First type <code>cd ~</code>. They check the kit in your home folder, and the zip in Downloads.</p>
+        <div class="code"><small>1. The zip is the one we published. This should print the fingerprint below.</small><span id="c1">shasum -a 256 ~/Downloads/Mac-Claude-Security-Sweep.zip</span><button class="copy" data-c="c1" aria-label="Copy command 1">Copy</button></div>
+        <div class="code"><small>Expected fingerprint</small><span class="hash">bdaa3083b3ff9b9e2c2d76fcc0092d2891aa9e1c2b772dedc1c26e315312cf1a</span></div>
         <div class="code"><small>2. Nothing in the scripts phones home. Expect one match: a search pattern, not a command.</small><span id="c2">grep -nE '(^|[;&amp;|(] *)(curl|wget|nc|scp|sftp|rsync|ssh)( |$)' mac-claude-security-sweep/collect-checks.sh mac-claude-security-sweep/sudo-checks.sh</span><button class="copy" data-c="c2" aria-label="Copy command 2">Copy</button></div>
-        <div class="code"><small>3. See every place the scripts could change a file. Expect only a timer, a rename to a backup name and result-file ownership.</small><span id="c3">grep -nE '\b(rm|mv|chmod|chown|kill|defaults write)\b' mac-claude-security-sweep/collect-checks.sh mac-claude-security-sweep/sudo-checks.sh</span><button class="copy" data-c="c3" aria-label="Copy command 3">Copy</button></div>
+        <div class="code"><small>3. See every place the scripts could change a file. Expect only: stopping its own timed-out checks, tidying its own temp and result files, and setting ownership and permissions on the results folder.</small><span id="c3">grep -nE '\b(rm|mv|chmod|chown|kill|defaults write)\b' mac-claude-security-sweep/collect-checks.sh mac-claude-security-sweep/sudo-checks.sh</span><button class="copy" data-c="c3" aria-label="Copy command 3">Copy</button></div>
       </div>
     </div>
     <div class="limits">
@@ -483,7 +488,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
       </ol>
       <div class="code"><span id="c0">curl -fsSL https://claude.ai/install.sh | bash</span><button class="copy" data-c="c0" aria-label="Copy the install line">Copy</button></div>
       <ol>
-        <li><div><strong>Download the kit</strong><span>It lands in your Downloads folder. No need to unzip it.</span></div></li>
+        <li><div><strong>Download the kit</strong><span>It lands in your Downloads folder. If Safari unzips it for you, that is fine; Claude finds either.</span></div></li>
         <li><div><strong>Paste this into Claude Code</strong><span>Claude unpacks the kit, runs the sweep, and walks you through the report.</span></div></li>
       </ol>
       <div class="code"><span id="c4">cd ~ &amp;&amp; claude "Find Mac-Claude-Security-Sweep in my Downloads folder (zip or already-unzipped folder), unpack it into my home folder as ~/mac-claude-security-sweep, then read START-HERE.md and AUDIT-BRIEF.md and run the sweep from Phase 0. Scan read-only; change nothing unless I approve it item by item in the cleanup step."</span><button class="copy" data-c="c4" aria-label="Copy the Claude Code prompt">Copy</button></div>

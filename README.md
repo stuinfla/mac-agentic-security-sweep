@@ -92,7 +92,7 @@ shasum -a 256 ~/Downloads/Mac-Claude-Security-Sweep.zip
 It should print:
 
 ```
-357d113ad6ee43d153e5e8d312c9df3ddb408abc10b77df5e5383f3a22ef56ed
+bdaa3083b3ff9b9e2c2d76fcc0092d2891aa9e1c2b772dedc1c26e315312cf1a
 ```
 
 A matching fingerprint proves the file was not damaged or swapped in transit. It does not replace reading the scripts. They are short, and the whole point is that you can.

@@ -57,8 +57,8 @@ It refuses everything else, and refuses genuine Apple-signed apps and programs. 
 | **Configuration profile / MDM** on a personal Mac | macOS 13: System Settings → Privacy & Security → Profiles. Later: System Settings → General → Device Management. Select it → **−** | If it can't be removed, it's managed; ask whoever owns the Mac | Reinstall the profile |
 | **Added root certificate** | Keychain Access (on macOS 15+ it's hidden: open it with Spotlight, ⌘Space) → the certificate → Get Info → Trust → **Never Trust** | Export it to the kit's `quarantine/` folder, then delete it in Keychain Access | Re-import it / set the trust back |
 | **Unknown proxy / DNS / VPN** | System Settings → Network → your connection → Details → Proxies / DNS → remove | Remove the VPN configuration under VPN | Re-enter the settings |
-| **Hosts-file entry** | Claude shows you the exact line, then runs the three commands under *Hosts file and cron jobs* below. They remove only a line that matches exactly and keep the old file as `/etc/hosts.bak`. | — | `sudo cp /etc/hosts.bak /etc/hosts` |
-| **Cron job** | Claude shows you the exact line, then runs the commands under *Hosts file and cron jobs* below. They save your scheduled jobs to a backup first. | — | `crontab results/crontab.backup` |
+| **Hosts-file entry** | Claude shows you the exact line and the three commands under *Hosts file and cron jobs* below; you paste them into your second Terminal window. They remove only a line that matches exactly and keep the old file as `/etc/hosts.bak`. | — | `sudo cp /etc/hosts.bak /etc/hosts` |
+| **Cron job** | Claude shows you the exact line and the commands under *Hosts file and cron jobs* below; you paste them into your Terminal window. They save your scheduled jobs to a backup first. | — | `crontab results/crontab.backup` |
 | **Suspicious line in a shell startup file** (`.zshrc` etc.) | Back up the file into `results/`, then comment out the line with `#` | — | Restore from the backup |
 | **Unknown SSH key in `authorized_keys`** | Back up the file into `results/`, then remove that one line | Turn off Remote Login (System Settings → General → Sharing) | Restore the backup / switch it back on |
 | **Remote Login / Screen Sharing / Remote Management you didn't turn on** | System Settings → General → Sharing → switch off | — | Switch back on |
@@ -102,7 +102,7 @@ Both tools are free and open source, from Objective-See (objective-see.org).
 
 Claude can walk you through this, but installing is your call and your click.
 
-## Hosts file and cron jobs (commands Claude runs only after you approve)
+## Hosts file and cron jobs (commands you paste into Terminal yourself; Claude never runs `sudo`)
 
 Hosts file. Replace `<exact line>` with the line Claude showed you:
 
