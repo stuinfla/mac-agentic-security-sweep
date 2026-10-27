@@ -249,13 +249,20 @@ footer a{text-decoration:underline;text-underline-offset:3px}
   .sec{background:linear-gradient(180deg,rgba(5,7,26,.0) 0,rgba(5,7,26,.82) 22vh,rgba(5,7,26,.88) 100%)}
   .hero{background:none}
   .steps{max-width:none}
+  .how{gap:22px}
+  .how .mock{order:-1;position:sticky;top:62px;z-index:6;min-height:0;background:linear-gradient(160deg,rgba(14,20,52,.97),rgba(6,8,24,.98))}
+  .how .mock .scene{padding:14px 16px 16px}
+  .how .mock .scene:not(.on){display:none}
+  .how .mock .tb{padding:10px 14px}
 }
 @media (max-width:560px){
   .brand{font-size:.88rem;white-space:nowrap;gap:8px}.brand svg{width:22px;height:22px}
   .btn.sm{white-space:nowrap}
-  .hero h1{font-size:2.5rem}.hero .lede{font-size:1.02em;margin-bottom:1.2em}.fine{font-size:.82rem}
+  .hero{padding-top:78px;padding-bottom:30px}
+  .hero h1{font-size:2.3rem}.hero .lede{font-size:.97em;margin-bottom:1em}.fine{font-size:.78rem}
+  .hero .cta-row{display:flex;flex-wrap:nowrap;gap:10px}
+  .hero .cta-row .btn{padding:.75em 1em;font-size:.92rem;white-space:nowrap}
   .cmp .tag{font-size:.74rem;padding:.4em .8em}.cmp .tag.r{top:auto;bottom:14px}
-  .mock{min-height:460px}
   .note{grid-template-columns:1fr}
   .cmp{aspect-ratio:4/3}
   .step h3{font-size:1.4rem}
@@ -626,7 +633,7 @@ safe(function(){ // how it works
   steps.forEach(function(s,i){s.addEventListener('click',function(){go(i)})});
   go(0);
   if('IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)go(+e.target.getAttribute('data-s'))})},{rootMargin:'-42% 0px -46% 0px'});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)go(+e.target.getAttribute('data-s'))})},{rootMargin:matchMedia('(max-width:999px)').matches?'-62% 0px -26% 0px':'-42% 0px -46% 0px'});
     steps.forEach(function(s){io.observe(s)});
   }
   var yes=$('#fixYes'),no=$('#fixNo'),res=$('#fixRes');
@@ -735,19 +742,19 @@ function initGL(){
     g.fillStyle=gr;g.beginPath();g.roundRect?g.roundRect(6,6,w-12,h-12,30):g.rect(6,6,w-12,h-12);g.fill();
     g.lineWidth=hl?7:3;g.strokeStyle=hl?'#ffffff':(t.status>=2?col:'rgba(120,160,255,.55)');g.stroke();
     icon(g,it.id,36,34,66,t.status>=2?col:'#8fe9ff');
-    g.fillStyle='#eaf0ff';g.font='700 46px "Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif';g.textBaseline='alphabetic';
-    var name=it.n,fs=46;while(g.measureText(name).width>w-72&&fs>28){fs-=2;g.font='700 '+fs+'px "Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif'}
-    g.fillText(name,36,170);
-    g.fillStyle='#a2acd2';g.font='500 30px "Hanken Grotesk",system-ui,sans-serif';g.fillText(it.s,36,212);
-    g.fillStyle=col;g.beginPath();g.arc(48,276,9,0,Math.PI*2);g.fill();
-    g.font='600 30px "Hanken Grotesk",system-ui,sans-serif';g.fillText(STAT[t.status],70,287);
+    g.fillStyle='#eaf0ff';g.font='700 60px "Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif';g.textBaseline='alphabetic';
+    var name=it.n,fs=60;while(g.measureText(name).width>w-60&&fs>34){fs-=2;g.font='700 '+fs+'px "Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif'}
+    g.fillText(name,32,176);
+    g.fillStyle='#a2acd2';g.font='500 36px "Hanken Grotesk",system-ui,sans-serif';g.fillText(it.s,32,226);
+    g.fillStyle=col;g.beginPath();g.arc(46,290,10,0,Math.PI*2);g.fill();
+    g.font='600 36px "Hanken Grotesk",system-ui,sans-serif';g.fillText(STAT[t.status],70,302);
     t.tex.needsUpdate=true;t.drawn=t.status+':'+(hl?1:0);
   }
   var tiles=SURF.map(function(it,i){
     var cv=document.createElement('canvas');cv.width=512;cv.height=340;
     var tex=new T.CanvasTexture(cv);tex.anisotropy=4;
     var mat=reg(new T.MeshBasicMaterial({map:tex,depthWrite:false}),1);
-    var mesh=new T.Mesh(new T.PlaneGeometry(1.45,.96),mat);mesh.userData.i=i;ring.add(mesh);
+    var mesh=new T.Mesh(new T.PlaneGeometry(1.6,1.06),mat);mesh.userData.i=i;ring.add(mesh);
     var t={i:i,cv:cv,tex:tex,mat:mat,mesh:mesh,status:0,base:i/SURF.length*Math.PI*2,sc:1,pop:0,drawn:'',doneAt:0};
     return t;
   });
@@ -791,7 +798,7 @@ function initGL(){
   var W=1,H=1,P=false;
   function measure(){centers=keyEls.map(function(el){var r=el.getBoundingClientRect();return r.top+scrollY+r.height/2})}
   function anchorFor(id){
-    if(P)return id==='hero'?[.5,.88]:[.5,.2];
+    if(P)return id==='hero'?[.5,.84]:[.5,.2];
     if(id==='get')return [.5,.5];
     if(id==='hero')return [.79,.52];
     return [.72,.52];
@@ -813,7 +820,7 @@ function initGL(){
   var heroArt=$('#heroArt'),bgPlan=$('#bgPlan'),bgShield=$('#bgShield');
   var HA={x:.62,y:.5,r:1.5};
   function placeHero(ax,ay){
-    var w=Math.min(W*(P?1.6:.76),H*(P?1.7:1.55)),h=w/HA.r;
+    var w=Math.min(W*(P?1.45:.76),H*(P?1.7:1.55)),h=w/HA.r;
     heroArt.style.width=w+'px';heroArt.style.height=h+'px';
     heroArt.style.left=(ax*W-HA.x*w)+'px';heroArt.style.top=(ay*H-HA.y*h)+'px';
     return w;
