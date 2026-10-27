@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mac Agentic Security Sweep</title>
+<meta name="description" content="A quick, read-only security briefing for your Mac. Claude checks eleven places AI agents and installs can leave exposed, tells you in plain English, and changes nothing unless you say yes.">
+<meta name="theme-color" content="#05071a">
+<meta property="og:title" content="Mac Agentic Security Sweep">
+<meta property="og:description" content="A quick, read-only security briefing for your Mac in the age of AI agents.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05071a; --deep:#0a1030; --panel:rgba(14,20,52,.72); --line:rgba(150,180,255,.16);
+  --txt:#eaf0ff; --mut:#a2acd2; --cy:#6be4ff; --iris:#8a7cff; --amb:#ffb547; --mint:#46e6a6; --red:#ff6b6b;
+  --disp:'Bricolage Grotesque','Hanken Grotesk',system-ui,sans-serif;
+  --body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gut:clamp(20px,5vw,72px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark;scroll-behavior:smooth}
+body{background:var(--ink);color:var(--txt);font-family:var(--body);font-size:clamp(16px,1.05vw + 8px,19px);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cy);outline-offset:3px;border-radius:6px}
+h1,h2,h3{font-family:var(--disp);font-weight:700;letter-spacing:-.025em;line-height:1.02;text-wrap:balance}
+p{text-wrap:pretty}
+
+/* fixed stage */
+.stage{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 90% at 70% 40%,#0c1440 0%,#060820 55%,#04050f 100%)}
+.stage .layer{position:absolute;inset:0;opacity:0;background-size:cover;background-position:center;will-change:opacity}
+#bgPlan{background-image:url(img/plan.jpg);mix-blend-mode:screen}
+#bgShield{background-image:url(img/shield.jpg);mix-blend-mode:screen}
+#heroArt{position:absolute;opacity:1;background:url(img/hero.jpg) center/contain no-repeat;will-change:opacity,transform;left:0;top:0;width:100px;height:100px;-webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(closest-side,#000 62%,transparent 100%)}
+.stage .vig{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,transparent 40%,rgba(2,3,12,.75) 100%),linear-gradient(90deg,rgba(4,5,15,.94) 0,rgba(4,5,15,.9) 38%,rgba(4,5,15,.55) 50%,rgba(4,5,15,0) 64%)}
+.sec h2,.sec .lede,.hero h1{text-shadow:0 2px 28px rgba(3,4,14,.85)}
+#gl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;transition:none;display:block;touch-action:pan-y}
+.grain{position:absolute;inset:0;opacity:.06;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");mix-blend-mode:overlay}
+
+/* top bar */
+.bar{position:fixed;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px var(--gut);transition:background .3s,backdrop-filter .3s}
+.bar.solid{background:rgba(5,7,26,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--disp);font-weight:700;font-size:1.05rem;letter-spacing:-.01em}
+.brand svg{width:26px;height:26px}
+.bar nav{display:flex;align-items:center;gap:26px;font-size:.92rem;color:var(--mut)}
+.bar nav a{text-decoration:none}
+.bar nav a:hover{color:var(--txt)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:.8em 1.35em;border-radius:999px;border:1px solid transparent;text-decoration:none;font-weight:600;font-size:.98rem;transition:transform .2s,box-shadow .2s,background .2s}
+.btn.pri{background:linear-gradient(135deg,#7cecff,#8a7cff);color:#050719;box-shadow:0 0 0 0 rgba(107,228,255,.5),0 10px 40px -10px rgba(107,228,255,.55)}
+.btn.pri:hover{transform:translateY(-2px);box-shadow:0 0 0 6px rgba(107,228,255,.14),0 16px 50px -10px rgba(107,228,255,.7)}
+.btn.ghost{border-color:var(--line);background:rgba(255,255,255,.03);color:var(--txt)}
+.btn.ghost:hover{background:rgba(255,255,255,.08)}
+.btn.sm{padding:.55em 1.1em;font-size:.88rem}
+
+/* sections */
+main{position:relative;z-index:2}
+.sec{position:relative;padding:clamp(80px,12vh,150px) var(--gut)}
+.wrap{max-width:1240px;margin:0 auto}
+.col{max-width:34rem}
+.sec h2{font-size:clamp(2.2rem,5.2vw,4.4rem);margin-bottom:.45em}
+.lede{color:var(--mut);font-size:1.12em;max-width:34rem}
+.lede strong,.col strong{color:var(--txt);font-weight:600}
+
+/* hero */
+.hero{min-height:100svh;display:flex;align-items:center;padding-top:110px;padding-bottom:70px}
+.hero h1{font-size:clamp(2.6rem,5.2vw,4.9rem);font-weight:800;letter-spacing:-.04em;line-height:.95;margin-bottom:.38em}
+.hero h1 .ln{display:block;overflow:hidden;padding-bottom:.08em}
+.hero h1 .ln>span{display:block}
+.hero .lede{margin-bottom:1.7em;font-size:1.2em}
+.skip{position:fixed;left:12px;top:-60px;z-index:50;background:#fff;color:#050719;padding:.6em 1em;border-radius:8px;font-weight:600;text-decoration:none}
+.skip:focus{top:12px}
+.kbd{font-family:var(--mono);font-size:.9em;color:var(--txt)}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.fine{margin-top:1.5em;font-size:.88rem;color:var(--mut);display:flex;gap:10px;align-items:center}
+.fine i{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 12px var(--mint);flex:none}
+.scrollhint{position:absolute;left:var(--gut);bottom:26px;font-size:.8rem;color:var(--mut);display:flex;align-items:center;gap:10px}
+.scrollhint i{display:block;width:1px;height:34px;background:linear-gradient(var(--cy),transparent);animation:drip 2.2s ease-in-out infinite;transform-origin:top}
+@keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+
+/* why */
+.why-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:48px}
+.cmp{position:relative;width:100%;aspect-ratio:3/2;max-height:72vh;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:0 40px 120px -40px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.03) inset;touch-action:pan-y;background:#000;user-select:none}
+.cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.cmp .top{clip-path:inset(0 calc(100% - var(--p,50%)) 0 0)}
+.cmp .tag{position:absolute;top:16px;padding:.55em 1em;border-radius:999px;font-weight:600;font-size:.9rem;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.cmp .tag.l{left:16px;background:rgba(60,30,0,.55);color:#ffd08a;border:1px solid rgba(255,181,71,.5)}
+.cmp .tag.r{right:16px;background:rgba(0,40,30,.55);color:#9cf5d1;border:1px solid rgba(70,230,166,.5)}
+.cmp .hdl{position:absolute;top:0;bottom:0;left:var(--p,50%);width:2px;background:#fff;box-shadow:0 0 24px rgba(255,255,255,.7);pointer-events:none}
+.cmp .hdl b{position:absolute;top:50%;left:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:rgba(5,7,26,.85);border:2px solid #fff;display:grid;place-items:center;font-size:1.1rem;letter-spacing:-.1em}
+.cmp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.cmp input:focus-visible+.hdl b{outline:2px solid var(--cy);outline-offset:3px}
+.why-text{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px 56px;align-items:start}
+.why-text p{color:var(--mut)}
+.why-text p+p{margin-top:1em}
+.gap{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.gap>div{padding:26px 28px}
+.gap>div+div{border-left:1px solid var(--line);background:linear-gradient(160deg,rgba(255,181,71,.07),transparent 60%)}
+.gap h3{font-size:1.15rem;letter-spacing:-.01em;margin-bottom:.8em}
+.gap ul{list-style:none;display:grid;gap:.7em;font-size:.97rem;color:var(--mut)}
+.gap li{display:grid;grid-template-columns:20px 1fr;gap:10px}
+.gap li svg{width:18px;height:18px;margin-top:.28em}
+.note{margin-top:28px;padding:22px 26px;border-radius:18px;border:1px solid rgba(107,228,255,.35);background:linear-gradient(120deg,rgba(107,228,255,.1),rgba(138,124,255,.08));display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+.note svg{width:30px;height:30px;margin-top:2px}
+.note p{color:var(--txt)}
+.note p span{color:var(--mut)}
+
+/* surfaces */
+.surf{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 22px;max-width:36rem}
+.chip{padding:.5em .95em;border-radius:999px;border:1px solid var(--line);background:rgba(10,16,44,.7);font-size:.9rem;color:var(--mut);transition:all .2s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.chip:hover{color:var(--txt);border-color:rgba(107,228,255,.5)}
+.chip[aria-pressed=true]{background:linear-gradient(135deg,#7cecff,#8a7cff);color:#050719;border-color:transparent;font-weight:600}
+.panel{max-width:36rem;padding:26px 28px 28px;border-radius:22px;border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 30px 80px -30px rgba(0,0,0,.8)}
+.panel h3{font-size:1.9rem;margin-bottom:.1em}
+.panel .sub{color:var(--cy);font-size:.95rem;margin-bottom:1.1em}
+.panel h4{font-family:var(--disp);font-size:1rem;margin:1.2em 0 .4em;color:var(--txt)}
+.panel ul{list-style:none;display:grid;gap:.35em;color:var(--mut);font-size:.97rem}
+.panel li{padding-left:1.3em;position:relative}
+.panel li::before{content:"";position:absolute;left:.15em;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--cy);box-shadow:0 0 8px var(--cy)}
+.panel p{color:var(--mut);font-size:.97rem}
+.panel .eg{margin-top:1.2em;padding:14px 16px;border-radius:14px;background:rgba(255,181,71,.08);border:1px solid rgba(255,181,71,.28);font-size:.93rem;color:#ffd9a0;display:grid;grid-template-columns:auto 1fr;gap:12px}
+.panel .eg svg{width:20px;height:20px;margin-top:.15em}
+.panel.swap{animation:swap .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes swap{from{opacity:.0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* how */
+.how{display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+.steps{display:grid;gap:0;position:relative;max-width:30rem}
+.steps::before{content:"";position:absolute;left:19px;top:20px;bottom:20px;width:2px;background:var(--line)}
+.steps .prog{position:absolute;left:19px;top:20px;width:2px;height:0;background:linear-gradient(var(--cy),var(--iris));box-shadow:0 0 14px var(--cy);transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.step{position:relative;padding:0 0 44px 64px;opacity:.62;transition:opacity .4s;cursor:pointer;text-align:left;background:none;border:0;display:block;width:100%}
+.step:last-child{padding-bottom:0}
+.step.on{opacity:1}
+.step .dot{position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--ink);border:2px solid var(--line);transition:all .4s}
+.step.on .dot{border-color:var(--cy);box-shadow:0 0 0 6px rgba(107,228,255,.12),0 0 24px rgba(107,228,255,.5)}
+.step .dot svg{width:20px;height:20px}
+.step h3{font-size:1.6rem;margin-bottom:.25em}
+.step p{color:var(--mut);font-size:1rem}
+.mock{position:relative;border-radius:24px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(14,20,52,.85),rgba(6,8,24,.9));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 40px 120px -40px rgba(0,0,0,.9);overflow:hidden}
+.mock .tb{display:flex;align-items:center;gap:7px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:.8rem;color:var(--mut)}
+.mock .tb i{width:10px;height:10px;border-radius:50%;background:#2b3563}
+.mock .tb span{margin-left:8px}
+.mock .tb em{margin-left:auto;font-style:normal;padding:.15em .7em;border:1px solid var(--line);border-radius:999px}
+.stk{display:grid}
+.scene{grid-area:1/1;position:relative;padding:22px 22px 26px;opacity:0;transform:translateY(12px);transition:opacity .45s,transform .45s;pointer-events:none;visibility:hidden}
+.scene.on{opacity:1;transform:none;pointer-events:auto;visibility:visible}
+.term{font-family:var(--mono);font-size:clamp(.74rem,1.4vw,.86rem);color:#b9c4ee;display:grid;gap:.55em}
+.term div{opacity:0;display:flex;gap:10px;align-items:baseline}
+.scene.on .term div{animation:line .5s forwards}
+@keyframes line{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.term b{color:var(--mint);font-weight:500}
+.term .ok{color:var(--mint)}
+.term .dim{color:#6c78a8}
+.term .fin{margin-top:.8em;padding:12px 14px;border:1px solid rgba(70,230,166,.4);background:rgba(70,230,166,.07);border-radius:12px;color:#aaf7d6;display:block}
+.rep{display:grid;gap:12px}
+.row{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.025);opacity:0}
+.scene.on .row{animation:line .55s forwards}
+.pill{padding:.2em .8em;border-radius:999px;font-size:.78rem;font-weight:600;white-space:nowrap}
+.pill.fine{background:rgba(70,230,166,.14);color:#8ef0c6;border:1px solid rgba(70,230,166,.4)}
+.pill.look{background:rgba(255,181,71,.14);color:#ffcf85;border:1px solid rgba(255,181,71,.45)}
+.pill.urg{background:rgba(255,107,107,.15);color:#ff9d9d;border:1px solid rgba(255,107,107,.5)}
+.row strong{display:block;font-size:.98rem}
+.row span{color:var(--mut);font-size:.9rem}
+.fix{display:grid;gap:14px}
+.fixcard{padding:20px;border-radius:18px;border:1px solid rgba(138,124,255,.45);background:linear-gradient(160deg,rgba(138,124,255,.14),rgba(107,228,255,.05))}
+.fixcard h4{font-family:var(--disp);font-size:1.25rem;margin-bottom:.5em}
+.fixcard dl{display:grid;grid-template-columns:auto 1fr;gap:.35em 14px;font-size:.92rem;color:var(--mut)}
+.fixcard dt{color:var(--txt);font-weight:600}
+.fixcard .acts{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.fixcard .res{margin-top:14px;font-size:.92rem;min-height:1.4em}
+.fixcard .res.ok{color:#9cf5d1}.fixcard .res.skip{color:var(--mut)}
+.prot{display:grid;place-items:center;text-align:center;gap:14px;height:100%}
+.prot svg{width:min(240px,60%);height:auto;overflow:visible}
+.prot p{color:var(--mut);max-width:24rem;font-size:.97rem}
+
+/* agents */
+.ag{display:grid;gap:0;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:46px;border-top:1px solid var(--line)}
+.ag>div{padding:28px 26px 30px 0;border-bottom:1px solid var(--line);display:grid;gap:12px;align-content:start}
+.ag svg{width:44px;height:44px}
+.ag h3{font-size:1.25rem;letter-spacing:-.01em;line-height:1.15;min-height:2.3em}
+.ag p{color:var(--mut);font-size:.96rem}
+
+/* safe */
+.safe-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:44px;margin-top:30px}
+.prom{list-style:none;display:grid;gap:14px}
+.prom li{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start}
+.prom svg{width:30px;height:30px;margin-top:2px}
+.prom strong{display:block;font-size:1.05rem}
+.prom span{display:block;color:var(--mut);font-size:.95rem;line-height:1.45;margin-top:.15em}
+.verify{padding:24px;border-radius:22px;border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.verify h3{font-size:1.4rem;margin-bottom:.3em}
+.verify>p{color:var(--mut);font-size:.95rem;margin-bottom:1em}
+.code{position:relative;margin:10px 0;padding:14px 56px 14px 16px;border-radius:12px;background:#03040f;border:1px solid var(--line);font-family:var(--mono);font-size:clamp(.7rem,1.3vw,.82rem);color:#c7d2ff;overflow-x:auto;white-space:pre;word-break:normal;line-height:1.55}
+.code small{word-break:normal;overflow-wrap:break-word;display:block;font-family:var(--body);color:var(--mut);font-size:.8rem;margin-bottom:.3em;white-space:normal}
+.copy{position:absolute;top:10px;right:10px;padding:.3em .7em;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:.76rem;font-family:var(--body)}
+.copy:hover{background:rgba(255,255,255,.12)}
+.hash{font-family:var(--mono);color:var(--cy)}
+.limits{margin-top:34px;padding:22px 26px;border-radius:18px;border:1px solid rgba(255,181,71,.3);background:rgba(255,181,71,.06);max-width:52rem}
+.limits h3{font-size:1.15rem;margin-bottom:.4em}
+.limits p{color:#e8cfa3;font-size:.97rem}
+
+/* get */
+.get{text-align:center;padding-bottom:110px}
+.get h2{font-size:clamp(2.6rem,7vw,6rem);max-width:12ch;margin-left:auto;margin-right:auto}
+.get .lede{margin:0 auto 1.8em}
+.get .cta-row{justify-content:center}
+.run{margin:56px auto 0;max-width:46rem;text-align:left;display:grid;gap:16px}
+.run{counter-reset:s}
+.run ol{list-style:none;display:grid;gap:18px}
+.run li{display:grid;grid-template-columns:38px 1fr;gap:16px;counter-increment:s}
+.run li::before{content:counter(s);display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);font-family:var(--disp);font-weight:700;background:rgba(255,255,255,.04)}
+.run li strong{display:block;font-family:var(--disp);font-size:1.15rem}
+.run li span{color:var(--mut);font-size:.96rem}
+footer{position:relative;z-index:2;padding:34px var(--gut) 44px;border-top:1px solid var(--line);color:var(--mut);font-size:.88rem;background:rgba(3,4,12,.8)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+footer a{text-decoration:underline;text-underline-offset:3px}
+
+/* wide */
+@media (min-width:1000px){
+  .col{max-width:35rem}
+  .surf,.how,.safe-grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}
+  .how .mock{position:sticky;top:12vh}
+  .safe-grid{align-items:start}
+  .surf .panel{margin-top:0}
+  .surf>:last-child{display:none}
+}
+@media (min-width:1000px) and (min-aspect-ratio:11/10){
+  .surf{grid-template-columns:minmax(0,5fr) minmax(0,5fr)}
+  .surf>:first-child{grid-column:1}
+  .how{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}
+}
+/* portrait / phone: scene sits above, text blocks get a backing */
+@media (max-width:999px){
+  .bar nav a.hide-s{display:none}
+  .gap{grid-template-columns:1fr}
+  .gap>div+div{border-left:0;border-top:1px solid var(--line)}
+  .hero .col,.sec .col{padding:0}
+  .hero{align-items:flex-start;padding-top:96px}
+  .hero .col{background:linear-gradient(180deg,rgba(5,7,26,.55),rgba(5,7,26,0));padding-bottom:20px}
+  .sec>.wrap>.col,.surf>div:first-child,.why-text,.ag,.safe-grid>div{position:relative}
+  #gl{opacity:.8}
+  .sec{background:linear-gradient(180deg,rgba(5,7,26,.0) 0,rgba(5,7,26,.82) 22vh,rgba(5,7,26,.88) 100%)}
+  .hero{background:none}
+  .steps{max-width:none}
+}
+@media (max-width:560px){
+  .brand{font-size:.88rem;white-space:nowrap;gap:8px}.brand svg{width:22px;height:22px}
+  .btn.sm{white-space:nowrap}
+  .hero h1{font-size:2.5rem}.hero .lede{font-size:1.02em;margin-bottom:1.2em}.fine{font-size:.82rem}
+  .cmp .tag{font-size:.74rem;padding:.4em .8em}.cmp .tag.r{top:auto;bottom:14px}
+  .mock{min-height:460px}
+  .note{grid-template-columns:1fr}
+  .cmp{aspect-ratio:4/3}
+  .step h3{font-size:1.4rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .term div,.row{opacity:1}
+}
+.nogl #gl{display:none}
+.nogl #heroArt{opacity:1!important}
+
+</style>
+</head>
+<body>
+<div class="stage" aria-hidden="true">
+  <div class="layer" id="bgPlan"></div>
+  <div class="layer" id="bgShield"></div>
+  <div id="heroArt"></div>
+  <canvas id="gl"></canvas>
+  <div class="vig"></div>
+  <div class="grain"></div>
+</div>
+
+<a class="skip" href="#why">Skip to content</a>
+<header class="bar" id="bar">
+  <a class="brand" href="#hero" aria-label="Mac Agentic Security Sweep, top of page">
+    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7cecff"/><stop offset="1" stop-color="#8a7cff"/></linearGradient></defs><path d="M16 2.5 27 6.6v8.2c0 6.6-4.3 11.4-11 14.7C9.3 26.2 5 21.4 5 14.8V6.6L16 2.5Z" stroke="url(#lg)" stroke-width="2"/><rect x="10.5" y="11" width="11" height="8" rx="1.6" stroke="url(#lg)" stroke-width="1.6"/><path d="M8.5 21.5h15" stroke="url(#lg)" stroke-width="1.6" stroke-linecap="round"/></svg>
+    Mac Agentic Security Sweep
+  </a>
+  <nav>
+    <a class="hide-s" href="#surfaces">What it checks</a>
+    <a class="hide-s" href="#how">How it works</a>
+    <a class="hide-s" href="#safe">Is it safe?</a>
+    <a class="btn pri sm" href="#get">Get the kit</a>
+  </nav>
+</header>
+
+<main>
+<!-- HERO -->
+<section class="sec hero" id="hero">
+  <div class="wrap" style="width:100%">
+    <div class="col">
+      <h1 aria-label="A quick security briefing for your Mac.">
+        <span class="ln"><span>A quick security</span></span>
+        <span class="ln"><span>briefing for</span></span>
+        <span class="ln"><span>your Mac.</span></span>
+      </h1>
+      <p class="lede" data-in>If you use AI agents on your Mac, this checks what they and your installs may have left exposed: startup items, browser extensions, permissions, remote access, stored keys and more. Then it tells you in plain English what it found. It only looks. <strong>It changes nothing unless you say yes.</strong></p>
+      <div class="cta-row" data-in>
+        <a class="btn pri" href="#get">Get the free kit</a>
+        <a class="btn ghost" href="#surfaces">See what it checks</a>
+      </div>
+      <p class="fine" data-in><i></i>Free and open source. Needs a Mac and Claude Code. By Stuart Kerr, ISO Vision.</p>
+    </div>
+  </div>
+  <div class="scrollhint" aria-hidden="true"><i></i>Scroll</div>
+</section>
+
+<!-- WHY -->
+<section class="sec" id="why">
+  <div class="wrap">
+    <div class="col">
+      <h2>Most Macs have no one watching.</h2>
+      <p class="lede">Many Macs run with no antivirus and no anti-rootkit tool at all. Apple's built-in protections block known-bad downloads, and for years that was enough. Then we started talking to our computers.</p>
+    </div>
+    <div class="why-grid" style="margin-top:40px">
+      <div class="cmp" id="cmp" style="--p:50%">
+        <img src="img/sealed.jpg" alt="A laptop inside a closed ring of sealed glowing green panels." loading="lazy">
+        <img class="top" src="img/open.jpg" alt="A laptop surrounded by tall open doorways spilling amber light." loading="lazy">
+        <span class="tag l">Today: doors left open</span>
+        <span class="tag r">After a briefing and a few fixes</span>
+        <input type="range" min="2" max="98" value="50" aria-label="Drag to compare an exposed Mac with a protected Mac" id="cmpIn">
+        <div class="hdl"><b aria-hidden="true">&#8596;</b></div>
+      </div>
+      <div class="why-text">
+        <div>
+          <p>AI agents now run commands, install tools, edit settings and read your files for you. Each agent, plugin or extension you test can leave something behind: a startup item, a stored key, a permission you forgot you gave.</p>
+          <p><strong>Nothing on a stock Mac tells you when that adds up.</strong> The more you use AI on your Mac, the more doors there are to check.</p>
+        </div>
+        <div class="gap">
+          <div>
+            <h3>Already built into your Mac</h3>
+            <ul>
+              <li><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#46e6a6" stroke-width="1.6"/><path d="m6 10.3 2.6 2.6L14 7.5" stroke="#46e6a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Blocks known-bad downloads (Gatekeeper, XProtect)</li>
+              <li><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#46e6a6" stroke-width="1.6"/><path d="m6 10.3 2.6 2.6L14 7.5" stroke="#46e6a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Expects apps to be signed and notarized</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Nobody is checking</h3>
+            <ul>
+              <li><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#ffb547" stroke-width="1.6"/><path d="M10 5.5v5.6M10 14v.6" stroke="#ffb547" stroke-width="1.8" stroke-linecap="round"/></svg>Which startup items and extensions piled up</li>
+              <li><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#ffb547" stroke-width="1.6"/><path d="M10 5.5v5.6M10 14v.6" stroke="#ffb547" stroke-width="1.8" stroke-linecap="round"/></svg>What your AI tools were allowed to change</li>
+              <li><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#ffb547" stroke-width="1.6"/><path d="M10 5.5v5.6M10 14v.6" stroke="#ffb547" stroke-width="1.8" stroke-linecap="round"/></svg>Keys and tokens left in plain files</li>
+              <li><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#ffb547" stroke-width="1.6"/><path d="M10 5.5v5.6M10 14v.6" stroke="#ffb547" stroke-width="1.8" stroke-linecap="round"/></svg>Remote access you forgot was switched on</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="note">
+        <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="#6be4ff" stroke-width="2"/><path d="M16 9.5v8M16 21.5v1" stroke="#6be4ff" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <p><strong>This is a briefing, not antivirus.</strong> <span>It does not scan files for malware signatures. It audits how your Mac is set up, the places malware and risky agent setups live, and flags what looks out of place. It never changes anything without your yes.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SURFACES -->
+<section class="sec" id="surfaces">
+  <div class="wrap surf">
+    <div>
+      <div class="col">
+        <h2>Eleven places we look.</h2>
+        <p class="lede">Pick one to see what Claude reads there, and why it matters. Everything is read-only.</p>
+      </div>
+      <div class="chips" id="chips" role="group" aria-label="Places Claude checks"></div>
+      <div class="panel" id="panel"></div>
+    </div>
+    <div aria-hidden="true"></div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="col" style="margin-bottom:46px"><h2>Four steps. You stay in charge.</h2></div>
+    <div class="how">
+      <div class="steps" id="steps">
+        <div class="prog" id="prog"></div>
+        <button class="step on" data-s="0"><span class="dot"><svg viewBox="0 0 20 20" fill="none" stroke="#6be4ff" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="m13.2 13.2 4 4"/></svg></span><h3>Look</h3><p>Claude reads your Mac's settings, startup items, extensions and permissions. Read-only. The scripts change nothing and send nothing anywhere.</p></button>
+        <button class="step" data-s="1"><span class="dot"><svg viewBox="0 0 20 20" fill="none" stroke="#6be4ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="2"/><path d="M7 7h6M7 10.5h6M7 14h3"/></svg></span><h3>Brief</h3><p>You get a plain-language report: what's fine, what's worth a look, and what's urgent. Serious findings are flagged right away.</p></button>
+        <button class="step" data-s="2"><span class="dot"><svg viewBox="0 0 20 20" fill="none" stroke="#6be4ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 8 15.5 17 5"/></svg></span><h3>Fix</h3><p>Want something cleaned up? Claude explains each fix first and does one at a time. Each fix comes with an undo step.</p></button>
+        <button class="step" data-s="3"><span class="dot"><svg viewBox="0 0 20 20" fill="none" stroke="#6be4ff" stroke-width="1.8" stroke-linejoin="round"><path d="M10 2.5 16.5 5v5c0 3.8-2.6 6.3-6.5 7.8C6.1 16.300 3.500 13.800 3.500 10V5L10 2.500Z"/></svg></span><h3>Protect</h3><p>Finally, Claude offers protection tools you can choose to keep running between check-ups. Skip them if you like.</p></button>
+      </div>
+      <div class="mock" aria-label="Example of each step">
+        <div class="tb"><i></i><i></i><i></i><span>Example</span><em id="mockTag">Reading only</em></div>
+        <div class="stk">
+        <div class="scene on" data-s="0"><div class="term">
+          <div style="animation-delay:.1s"><b>&#9656;</b>Reading startup items <span class="dim">&#8230; 31 found</span></div>
+          <div style="animation-delay:.5s"><b>&#9656;</b>Reading browser extensions <span class="dim">&#8230; 12 found</span></div>
+          <div style="animation-delay:.9s"><b>&#9656;</b>Reading app permissions <span class="dim">&#8230; 24 found</span></div>
+          <div style="animation-delay:1.3s"><b>&#9656;</b>Reading remote access and accounts <span class="dim">&#8230; done</span></div>
+          <div style="animation-delay:1.7s"><b>&#9656;</b>Reading AI tools and settings <span class="dim">&#8230; 9 found</span></div>
+          <div style="animation-delay:2.1s"><b>&#9656;</b>Masking keys and tokens <span class="ok">&#10003;</span></div>
+          <div style="animation-delay:2.6s"><span class="fin">Changes made to your Mac: none</span></div>
+        </div></div>
+        <div class="scene" data-s="1"><div class="rep">
+          <div class="row" style="animation-delay:.1s"><span class="pill fine">Fine</span><div><strong>Startup items</strong><span>31 found, all signed by developers you know.</span></div></div>
+          <div class="row" style="animation-delay:.35s"><span class="pill look">Worth a look</span><div><strong>AI tools and settings</strong><span>A hook runs a command every time an agent starts. Is that yours?</span></div></div>
+          <div class="row" style="animation-delay:.6s"><span class="pill urg">Needs action</span><div><strong>Traffic settings</strong><span>An extra trusted certificate you may not have added.</span></div></div>
+        </div></div>
+        <div class="scene" data-s="2"><div class="fix">
+          <div class="fixcard" id="fixcard">
+            <h4>Remove a startup helper from an app you deleted</h4>
+            <dl><dt>What changes</dt><dd>One helper file is moved to a quarantine folder. Nothing is deleted.</dd><dt>Undo</dt><dd>An undo step puts it back as it was.</dd></dl>
+            <div class="acts"><button class="btn pri sm" id="fixYes">Try it (demo)</button><button class="btn ghost sm" id="fixNo">Skip</button></div>
+            <p class="res" id="fixRes" role="status" aria-live="polite">This is a demo. It changes nothing on your computer.</p>
+          </div>
+        </div></div>
+        <div class="scene" data-s="3"><div class="prot">
+          <svg viewBox="0 0 240 260" fill="none"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7cecff"/><stop offset="1" stop-color="#8a7cff"/></linearGradient></defs><path d="M120 12 214 46v64c0 62-40 104-94 134C66 214 26 172 26 110V46L120 12Z" stroke="url(#pg)" stroke-width="3" opacity=".9"/><path d="M120 34 194 60v50c0 50-31 84-74 108-43-24-74-58-74-108V60l74-26Z" stroke="url(#pg)" stroke-width="1.2" stroke-dasharray="4 6" opacity=".6"><animateTransform attributeName="transform" type="rotate" from="0 120 120" to="360 120 120" dur="40s" repeatCount="indefinite"/></path><path d="m82 126 28 28 52-58" stroke="#46e6a6" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p>Optional protection tools that keep an eye on things between check-ups. You choose what to turn on.</p>
+        </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENTS -->
+<section class="sec" id="agents">
+  <div class="wrap">
+    <div class="col">
+      <h2>Built for people who test new AI tools.</h2>
+      <p class="lede">If you try agents, plugins and servers often, your Mac collects more than you remember. These are the doors agents tend to open.</p>
+    </div>
+    <div class="ag">
+      <div><svg viewBox="0 0 44 44" fill="none" stroke="#6be4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="32" height="28" rx="5"/><path d="m14 18 5 4-5 4M23 27h8"/></svg><h3>Tool servers that run commands</h3><p>MCP servers can act on your Mac. The sweep lists every one and what it can reach.</p></div>
+      <div><svg viewBox="0 0 44 44" fill="none" stroke="#8a7cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8v12a6 6 0 0 0 12 0V8"/><path d="M22 26v10M16 36h12"/></svg><h3>Hooks that fire on their own</h3><p>A changed Claude Code hook can run a command every time an agent starts.</p></div>
+      <div><svg viewBox="0 0 44 44" fill="none" stroke="#ffb547" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6 38 14v16l-16 8-16-8V14L22 6Z"/><path d="m6 14 16 8 16-8M22 22v16"/></svg><h3>Skills and plugins from strangers</h3><p>Installed once, trusted forever. We list them so you can decide again.</p></div>
+      <div><svg viewBox="0 0 44 44" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="22" r="8"/><path d="M24 22h14M32 22v6M38 22v4"/></svg><h3>Keys in files an agent can read</h3><p>Tokens in .env files and shell history. We show names and mask the values.</p></div>
+      <div><svg viewBox="0 0 44 44" fill="none" stroke="#6be4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="9" width="30" height="22" rx="3"/><path d="M15 38h14M22 31v7"/><path d="M14 20h4v-4M26 22h4v4"/></svg><h3>Extensions bridged to apps</h3><p>Browser extensions that talk to programs on your Mac, including sideloaded ones.</p></div>
+      <div><svg viewBox="0 0 44 44" fill="none" stroke="#8a7cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="22" r="15"/><circle cx="22" cy="22" r="6"/><path d="M22 7v5M22 32v5M7 22h5M32 22h5"/></svg><h3>Permissions you clicked through</h3><p>Screen recording, input monitoring, full disk access. Granted in a hurry, kept forever.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SAFE -->
+<section class="sec" id="safe">
+  <div class="wrap">
+    <div class="col">
+      <h2>Safe to run, and easy to check.</h2>
+      <p class="lede">You should not take our word for it. Here is what it promises, and how to verify each promise yourself in a minute.</p>
+    </div>
+    <div class="safe-grid">
+      <ul class="prom">
+        <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="15" r="12"/><path d="m9.500 15.500 4 4 7.500-8.500"/></svg><div><strong>The scan is read-only.</strong><span>Nothing on your Mac is changed while it looks around, apart from the results folder it writes.</span></div></li>
+        <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="15" r="12"/><path d="M8 8l14 14"/></svg><div><strong>The scripts send none of your data anywhere.</strong><span>Two checks ask Apple for update and app-approval status. The report is saved on your Mac and shared with Claude in your session, like any file you show it.</span></div></li>
+        <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="13" width="20" height="13" rx="3"/><path d="M10 13V9a5 5 0 0 1 10 0v4"/></svg><div><strong>Secrets are masked.</strong><span>The scripts hide passwords, tokens and keys in what they collect, and list credential files by name.</span></div></li>
+        <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15h20M18 8l7 7-7 7"/></svg><div><strong>Fixes wait for your yes.</strong><span>Cleanup happens after the full scan, one item at a time, and each fix comes with an undo step.</span></div></li>
+        <li><svg viewBox="0 0 30 30" fill="none" stroke="#46e6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 9-6 6 6 6M20 9l6 6-6 6M17 6l-4 18"/></svg><div><strong>Open source.</strong><span>Three short scripts and plain-text instructions. Read every line before you run it.</span></div></li>
+      </ul>
+      <div class="verify">
+        <h3>Check it yourself</h3>
+        <p>Run these in Terminal, in the folder where you unzipped the kit.</p>
+        <div class="code"><small>1. The zip is the one we published. This should print the fingerprint below.</small><span id="c1">shasum -a 256 Mac-Claude-Security-Sweep.zip</span><button class="copy" data-c="c1" aria-label="Copy command 1">Copy</button></div>
+        <div class="code"><small>Expected fingerprint</small><span class="hash">357d113ad6ee43d153e5e8d312c9df3ddb408abc10b77df5e5383f3a22ef56ed</span></div>
+        <div class="code"><small>2. Nothing in the scripts phones home. Expect one match: a search pattern, not a command.</small><span id="c2">grep -nE '(^|[;&amp;|(] *)(curl|wget|nc|scp|sftp|rsync|ssh)( |$)' mac-claude-security-sweep/collect-checks.sh mac-claude-security-sweep/sudo-checks.sh</span><button class="copy" data-c="c2" aria-label="Copy command 2">Copy</button></div>
+        <div class="code"><small>3. See every place the scripts could change a file. Expect only a timer, a rename to a backup name and result-file ownership.</small><span id="c3">grep -nE '\b(rm|mv|chmod|chown|kill|defaults write)\b' mac-claude-security-sweep/collect-checks.sh mac-claude-security-sweep/sudo-checks.sh</span><button class="copy" data-c="c3" aria-label="Copy command 3">Copy</button></div>
+      </div>
+    </div>
+    <div class="limits">
+      <h3>What it can't do</h3>
+      <p>A clean report is a good sign, not a guarantee. It reads what standard macOS tools can see, so it can miss a threat built to hide from them. It is not a replacement for keeping macOS updated, using strong passwords and two-factor sign-in, or for a dedicated security product if you need one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GET -->
+<section class="sec get" id="get">
+  <div class="wrap">
+    <h2>Find out what your Mac is exposing.</h2>
+    <p class="lede">Free. You need a Mac and Claude Code. Nothing changes unless you approve it.</p>
+    <div class="cta-row">
+      <a class="btn pri" href="Mac-Claude-Security-Sweep.zip" download>Download the free kit</a>
+      <a class="btn ghost" href="#safe">Check it first</a>
+    </div>
+    <div class="run">
+      <ol>
+        <li><div><strong>Get Claude Code if you do not have it</strong><span>Open Terminal (press Command and Space, type Terminal, press Return) and paste this line. Then run <span class="kbd">claude</span> and sign in.</span></div></li>
+      </ol>
+      <div class="code"><span id="c0">curl -fsSL https://claude.ai/install.sh | bash</span><button class="copy" data-c="c0" aria-label="Copy the install line">Copy</button></div>
+      <ol>
+        <li><div><strong>Download the kit</strong><span>It lands in your Downloads folder. No need to unzip it.</span></div></li>
+        <li><div><strong>Paste this into Claude Code</strong><span>Claude unpacks the kit, runs the sweep, and walks you through the report.</span></div></li>
+      </ol>
+      <div class="code"><span id="c4">cd ~ &amp;&amp; claude "Find Mac-Claude-Security-Sweep in my Downloads folder (zip or already-unzipped folder), unpack it into my home folder as ~/mac-claude-security-sweep, then read START-HERE.md and AUDIT-BRIEF.md and run the sweep from Phase 0. Scan read-only; change nothing unless I approve it item by item in the cleanup step."</span><button class="copy" data-c="c4" aria-label="Copy the Claude Code prompt">Copy</button></div>
+      <ol><li><div><strong>Read your briefing</strong><span>Fix what you want, skip what you don't, and keep the report for next time.</span></div></li></ol>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Mac Agentic Security Sweep. Made by Stuart Kerr, ISO Vision. MIT license.</span>
+    <span><a href="https://github.com/stuinfla/mac-agentic-security-sweep">Source on GitHub</a>. A read-only audit, not antivirus.</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function(){
+'use strict';
+var RM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function sm(x){x=clamp(x,0,1);return x*x*(3-2*x)}
+function lerp(a,b,t){return a+(b-a)*t}
+function safe(fn){try{fn()}catch(e){if(window.console)console.warn(e)}}
+
+var SURF=[
+ {id:'startup',n:'Startup items',s:'What runs at login',
+  looks:['Launch agents and daemons','Login items and background items','Scheduled jobs and login hooks','Shell startup files','System and network extensions','Login-window plugins and who signed them'],
+  why:'Every installer and demo that wants to run at login lives here. Helpers with admin rights outlast the app that added them.',
+  find:'A helper from an app you removed months ago still starts at every login.'},
+ {id:'browsers',n:'Browser extensions',s:'Every profile',
+  looks:['Chrome, Brave, Edge, Arc, Vivaldi, Opera, Firefox and Safari','Which sites each extension can read','Sideloaded and unpacked extensions','Bridges between browsers and apps'],
+  why:'An extension can read the pages you visit. Sideloaded ones skip the store review entirely.',
+  find:'An extension that can read every site you visit and has no store listing.'},
+ {id:'perms',n:'App permissions',s:'Screen, keys, disk',
+  looks:['Screen recording and Accessibility','Input monitoring','Full Disk Access','Camera and microphone','Automation of other apps'],
+  why:'You click through prompts quickly when trying tools. Those grants stay until you remove them.',
+  find:'A tool you tried once can still record your screen.'},
+ {id:'intercept',n:'Traffic interception',s:'Proxy, certificates, DNS',
+  looks:['Configuration profiles and device management','Added root certificates','Proxy, DNS and VPN settings','The hosts file'],
+  why:'If your traffic is redirected, nothing else on the Mac can be trusted. This is checked early for that reason.',
+  find:'An extra trusted certificate nobody remembers installing.'},
+ {id:'remote',n:'Remote access',s:'And accounts',
+  looks:['Remote Login and Screen Sharing','SSH keys allowed to sign in','Extra and hidden user accounts','Who has admin rights'],
+  why:'A forgotten key or hidden account is a standing invitation.',
+  find:'An unknown key in the list of keys allowed to log in.'},
+ {id:'signing',n:'Code signing',s:'And downloads',
+  looks:['Who signed each startup item and app','Whether Gatekeeper approves it','Apps from unidentified sources','Download history and pipe-to-shell commands'],
+  why:'The signer and the arrival date tell you whether something is what it claims to be.',
+  find:'An app claiming to be from Apple without an Apple signature.'},
+ {id:'network',n:'Network',s:'What talks out',
+  looks:['Live connections and listening ports','Traffic totals, read twice a few minutes apart','Time Machine and mounted drives, which explain big numbers'],
+  why:'Large or steady outgoing traffic needs an explanation, and many have a boring one. The sweep looks for the boring one first.',
+  find:'Steady upload with no backup or drive that explains it.'},
+ {id:'dev',n:'Dev and AI tooling',s:'Where agents live',
+  looks:['MCP server settings','Claude Code settings, hooks and CLAUDE.md files','Skills and plugins','Global npm, pip and Homebrew packages and taps','Wrappers around the claude command'],
+  why:'These can run commands for you. A changed settings file can steer an agent before you notice.',
+  find:'A hook that runs a command every time an agent starts.'},
+ {id:'secrets',n:'Exposed secrets',s:'File names only',
+  looks:['Names of .env and key files','Tokens in config files, shown masked','Credentials typed into shell history'],
+  why:'A key left in an old project is the cheapest thing for an attacker to find.',
+  find:'A .env with live keys sitting in a project you stopped using.'},
+ {id:'basics',n:'Mac basics',s:'Updates and locks',
+  looks:['Is your macOS still receiving security fixes','FileVault, firewall and auto-login','System Integrity Protection and Gatekeeper','Backups'],
+  why:'These do not mean you are compromised, but they decide how much damage a problem can do.',
+  find:'FileVault is off, so a lost Mac is readable.'},
+ {id:'phone',n:'Your accounts',s:'Checked from your phone',
+  looks:['Apple, Google, Microsoft and GitHub sessions','Connected apps and API keys','Mail forwarding rules','A short checklist for your most sensitive accounts'],
+  why:'Stealers want your accounts more than your Mac. The kit gives you a short checklist to do from your phone.',
+  find:'A mail forwarding rule you never created.'}
+];
+var EXAMPLE_FLAG=7; // dev tooling shows an example finding
+var sel=7;
+
+/* ---------- DOM wiring (works without WebGL) ---------- */
+var chipsEl=$('#chips'),panelEl=$('#panel');
+var onSelect=function(){};
+function renderPanel(i,animate){
+  var it=SURF[i];
+  panelEl.innerHTML='<h3>'+it.n+'</h3><div class="sub">'+it.s+'</div>'+
+   '<h4>What Claude reads</h4><ul>'+it.looks.map(function(l){return '<li>'+l+'</li>'}).join('')+'</ul>'+
+   '<h4>Why it matters</h4><p>'+it.why+'</p>'+
+   '<div class="eg"><svg viewBox="0 0 20 20" fill="none" stroke="#ffb547" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.500 18 16.500H2L10 2.500Z"/><path d="M10 8v4M10 14.300v.2"/></svg><div><strong>Example of what it might flag:</strong> '+it.find+'</div></div>';
+  if(animate&&!RM){panelEl.classList.remove('swap');void panelEl.offsetWidth;panelEl.classList.add('swap')}
+}
+function select(i,fromGL){
+  sel=i;
+  $$('.chip',chipsEl).forEach(function(c,k){c.setAttribute('aria-pressed',k===i?'true':'false')});
+  renderPanel(i,true);
+  onSelect(i,fromGL);
+}
+SURF.forEach(function(it,i){
+  var b=document.createElement('button');b.className='chip';b.type='button';b.textContent=it.n;
+  b.addEventListener('click',function(){select(i)});chipsEl.appendChild(b);
+});
+select(sel,true);panelEl.classList.remove('swap');
+
+safe(function(){ // top bar
+  var bar=$('#bar');function f(){bar.classList.toggle('solid',scrollY>40)}f();addEventListener('scroll',f,{passive:true});
+});
+safe(function(){ // copy buttons
+  $$('.copy').forEach(function(b){b.addEventListener('click',function(){
+    var t=document.getElementById(b.getAttribute('data-c')).textContent;
+    function done(){b.textContent='Copied';b.setAttribute('role','status');setTimeout(function(){b.textContent='Copy'},1600)}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){fallback(t,done)})}else fallback(t,done);
+  })});
+  function fallback(t,done){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}document.body.removeChild(a)}
+});
+safe(function(){ // before/after slider
+  var c=$('#cmp'),inp=$('#cmpIn');
+  function set(v){c.style.setProperty('--p',v+'%');inp.value=v}
+  inp.addEventListener('input',function(){set(+inp.value)});
+  if(!RM&&'IntersectionObserver' in window){
+    var played=false,io=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting&&!played){played=true;var o={v:92};
+        var t0=performance.now(),from=92,to=50,d=1600;
+        (function step(n){var k=clamp((n-t0)/d,0,1);var e2=1-Math.pow(1-k,3);set(Math.round(lerp(from,to,e2)));if(k<1&&!userTouched)requestAnimationFrame(step)})(t0);
+      }})},{threshold:.5});
+    var userTouched=false;inp.addEventListener('pointerdown',function(){userTouched=true});io.observe(c);
+  }
+});
+safe(function(){ // how it works
+  var steps=$$('.step'),scenes=$$('.scene'),prog=$('#prog'),tag=$('#mockTag');
+  var tags=['Reading only','Your report','You approve each change','Optional'];
+  function go(i){
+    steps.forEach(function(s,k){s.classList.toggle('on',k<=i&&k===i)});
+    scenes.forEach(function(s,k){var on=k===i;if(on&&!s.classList.contains('on')){s.classList.remove('on');void s.offsetWidth}s.classList.toggle('on',on)});
+    tag.textContent=tags[i];
+    var st=steps[i];prog.style.height=(st.offsetTop+20)+'px';
+  }
+  steps.forEach(function(s,i){s.addEventListener('click',function(){go(i)})});
+  go(0);
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)go(+e.target.getAttribute('data-s'))})},{rootMargin:'-42% 0px -46% 0px'});
+    steps.forEach(function(s){io.observe(s)});
+  }
+  var yes=$('#fixYes'),no=$('#fixNo'),res=$('#fixRes');
+  yes.addEventListener('click',function(){res.className='res ok';res.innerHTML='Demo result: the helper would now sit in a quarantine folder, with an undo step ready. Nothing on your computer changed.'});
+  no.addEventListener('click',function(){res.className='res skip';res.textContent='Skipped. Nothing was changed.'});
+});
+
+/* ---------- headline intro ---------- */
+safe(function(){
+  if(RM||!window.gsap)return;
+  var spans=$$('.hero h1 .ln>span');
+  gsap.set(spans,{yPercent:115});
+  gsap.set('[data-in]',{opacity:0,y:18});
+  var tl=gsap.timeline({defaults:{ease:'power4.out'},delay:.15});
+  tl.to(spans,{yPercent:0,duration:1.1,stagger:.12}).to('[data-in]',{opacity:1,y:0,duration:.8,stagger:.12},'-=.6');
+});
+
+/* ---------- WebGL stage ---------- */
+function initGL(){
+  var canvas=$('#gl');
+  if(!window.THREE)return false;
+  var T=THREE,renderer;
+  try{renderer=new T.WebGLRenderer({canvas:canvas,antialias:true,alpha:true,powerPreference:'high-performance'})}catch(e){return false}
+  if(!renderer.getContext())return false;
+  renderer.setClearColor(0x000000,0);
+  var scene=new T.Scene(),camera=new T.PerspectiveCamera(36,1,.1,100);
+  var world=new T.Group();scene.add(world);
+  var ring=new T.Group();world.add(ring);
+  var CY=0x6be4ff,IRIS=0x8a7cff,AMB=0xffb547,MINT=0x46e6a6;
+  var fades=[];
+  function reg(m,base){m.transparent=true;m.userData.base=base;fades.push(m);return m}
+
+  /* lights */
+  scene.add(new T.AmbientLight(0x8899ff,.7));
+  var pl=new T.PointLight(CY,1.2,40);pl.position.set(4,6,6);scene.add(pl);
+  var pl2=new T.PointLight(IRIS,1,40);pl2.position.set(-6,2,-4);scene.add(pl2);
+
+  /* sprite */
+  var sc=document.createElement('canvas');sc.width=sc.height=64;var sg=sc.getContext('2d');
+  var rg=sg.createRadialGradient(32,32,0,32,32,32);rg.addColorStop(0,'rgba(255,255,255,1)');rg.addColorStop(.3,'rgba(255,255,255,.5)');rg.addColorStop(1,'rgba(255,255,255,0)');
+  sg.fillStyle=rg;sg.fillRect(0,0,64,64);var spriteTex=new T.CanvasTexture(sc);
+
+  /* laptop */
+  function rr(w,h,r){var s=new T.Shape(),x=-w/2,y=-h/2;s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s}
+  function slab(w,h,d,r){
+    var g=new T.ExtrudeGeometry(rr(w,h,r),{depth:d,bevelEnabled:false});
+    var m=reg(new T.MeshStandardMaterial({color:0x101a46,metalness:.55,roughness:.3,side:T.DoubleSide}),.62);
+    var mesh=new T.Mesh(g,m);
+    var e=reg(new T.LineBasicMaterial({color:CY}),.9);
+    var ln=new T.LineSegments(new T.EdgesGeometry(g),e);
+    var grp=new T.Group();grp.add(mesh);grp.add(ln);return grp;
+  }
+  var BW=5.6,BD=3.8,BT=.16,LH=3.6,LT=.1;
+  var laptop=new T.Group();world.add(laptop);
+  var base=slab(BW,BD,BT,.22);base.rotation.x=-Math.PI/2;laptop.add(base);
+  // keyboard dots
+  var kb=new T.Group(),kbm=reg(new T.MeshBasicMaterial({color:CY}),.55),kg=new T.PlaneGeometry(.2,.2);
+  for(var r=0;r<5;r++)for(var c=0;c<14;c++){var k=new T.Mesh(kg,kbm);k.rotation.x=-Math.PI/2;k.position.set(-2.4+c*.37,BT+.005,-1.0+r*.38);kb.add(k)}
+  laptop.add(kb);
+  var tp=new T.Mesh(new T.PlaneGeometry(1.6,.95),reg(new T.MeshBasicMaterial({color:IRIS}),.22));tp.rotation.x=-Math.PI/2;tp.position.set(0,BT+.006,1.25);laptop.add(tp);
+  var hinge=new T.Group();hinge.position.set(0,BT,-BD/2+.1);hinge.rotation.x=-.3;laptop.add(hinge);
+  var lid=slab(BW,LH,LT,.22);lid.position.set(0,LH/2,0);hinge.add(lid);
+  var scr=document.createElement('canvas');scr.width=1024;scr.height=640;var sx=scr.getContext('2d');
+  var scrTex=new T.CanvasTexture(scr);scrTex.anisotropy=4;
+  var scrMat=reg(new T.MeshBasicMaterial({map:scrTex}),1);
+  var scrMesh=new T.Mesh(new T.PlaneGeometry(BW-.4,LH-.4),scrMat);scrMesh.position.set(0,LH/2,LT+.012);hinge.add(scrMesh);
+  laptop.position.y=-.9;
+
+  /* floor rings */
+  function circle(rad,col,op){var pts=[];for(var i=0;i<=128;i++){var a=i/128*Math.PI*2;pts.push(new T.Vector3(Math.cos(a)*rad,0,Math.sin(a)*rad))}
+    var l=new T.Line(new T.BufferGeometry().setFromPoints(pts),reg(new T.LineBasicMaterial({color:col}),op));l.position.y=-.95;world.add(l);return l}
+  var R=4.3;circle(R*.55,CY,.16);circle(R,CY,.28);circle(R*1.35,IRIS,.14);
+
+  /* beam */
+  var beamL=.9;
+  var bm=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,
+    uniforms:{uA:{value:.6},uL:{value:beamL},uC:{value:new T.Color(CY)}},
+    vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+    fragmentShader:'varying vec2 vUv;uniform float uA,uL;uniform vec3 uC;void main(){vec2 p=vUv-.5;float a=atan(p.y,p.x);float t=clamp(a/uL,0.,1.);float r=length(p)*2.;float edge=smoothstep(.0,.04,1.-r);float lead=pow(t,3.)+smoothstep(.96,1.,t)*1.2;gl_FragColor=vec4(uC,(lead*.5)*edge*(1.-r*.5)*uA);}'});
+  var beam=new T.Group(),beamMesh=new T.Mesh(new T.CircleGeometry(R*1.38,64,0,beamL),bm);beamMesh.rotation.x=-Math.PI/2;beam.add(beamMesh);beam.position.y=-.9;world.add(beam);
+
+  /* tiles */
+  var STAT=['Waiting','Checking','Looks fine','Worth a look'];
+  var SCOL=['#9fb0ff','#6be4ff','#46e6a6','#ffb547'];
+  function icon(g,id,x,y,s,col){
+    g.save();g.translate(x,y);g.scale(s/40,s/40);g.strokeStyle=col;g.fillStyle=col;g.lineWidth=3;g.lineCap='round';g.lineJoin='round';g.beginPath();
+    switch(id){
+      case 'startup':g.arc(20,22,11,-1.1,Math.PI*2-2.04);g.moveTo(20,6);g.lineTo(20,20);break;
+      case 'browsers':g.rect(8,12,22,22);g.moveTo(30,18);g.lineTo(36,18);g.lineTo(36,28);g.lineTo(30,28);g.moveTo(14,12);g.arc(19,10,4,Math.PI,0);break;
+      case 'perms':g.moveTo(3,20);g.quadraticCurveTo(20,0,37,20);g.quadraticCurveTo(20,40,3,20);g.moveTo(26,20);g.arc(20,20,6,0,Math.PI*2);break;
+      case 'intercept':g.moveTo(4,8);g.lineTo(36,8);g.lineTo(24,22);g.lineTo(24,34);g.lineTo(16,30);g.lineTo(16,22);g.closePath();break;
+      case 'remote':g.arc(12,20,7,0,Math.PI*2);g.moveTo(19,20);g.lineTo(36,20);g.moveTo(30,20);g.lineTo(30,27);g.moveTo(35,20);g.lineTo(35,25);break;
+      case 'signing':g.arc(20,20,14,0,Math.PI*2);g.moveTo(13,21);g.lineTo(18,26);g.lineTo(28,15);break;
+      case 'network':g.moveTo(4,26);g.quadraticCurveTo(20,4,36,26);g.moveTo(11,28);g.quadraticCurveTo(20,16,29,28);g.moveTo(18,31);g.lineTo(22,31);break;
+      case 'dev':g.moveTo(14,10);g.lineTo(4,20);g.lineTo(14,30);g.moveTo(26,10);g.lineTo(36,20);g.lineTo(26,30);g.moveTo(23,7);g.lineTo(17,33);break;
+      case 'secrets':g.rect(8,5,24,30);g.moveTo(14,14);g.lineTo(26,14);g.moveTo(14,21);g.lineTo(26,21);g.moveTo(14,28);g.lineTo(21,28);break;
+      case 'basics':g.rect(7,18,26,17);g.moveTo(12,18);g.lineTo(12,12);g.arc(20,12,8,Math.PI,0);g.lineTo(28,18);break;
+      case 'phone':g.rect(11,3,18,34);g.moveTo(18,31);g.lineTo(22,31);break;
+    }
+    g.stroke();g.restore();
+  }
+  function drawTile(t,hl){
+    var g=t.cv.getContext('2d'),w=512,h=340,it=SURF[t.i],col=SCOL[t.status];
+    g.clearRect(0,0,w,h);
+    var gr=g.createLinearGradient(0,0,w,h);gr.addColorStop(0,'rgba(22,34,86,.94)');gr.addColorStop(1,'rgba(8,12,38,.94)');
+    g.fillStyle=gr;g.beginPath();g.roundRect?g.roundRect(6,6,w-12,h-12,30):g.rect(6,6,w-12,h-12);g.fill();
+    g.lineWidth=hl?7:3;g.strokeStyle=hl?'#ffffff':(t.status>=2?col:'rgba(120,160,255,.55)');g.stroke();
+    icon(g,it.id,36,34,66,t.status>=2?col:'#8fe9ff');
+    g.fillStyle='#eaf0ff';g.font='700 46px "Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif';g.textBaseline='alphabetic';
+    var name=it.n,fs=46;while(g.measureText(name).width>w-72&&fs>28){fs-=2;g.font='700 '+fs+'px "Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif'}
+    g.fillText(name,36,170);
+    g.fillStyle='#a2acd2';g.font='500 30px "Hanken Grotesk",system-ui,sans-serif';g.fillText(it.s,36,212);
+    g.fillStyle=col;g.beginPath();g.arc(48,276,9,0,Math.PI*2);g.fill();
+    g.font='600 30px "Hanken Grotesk",system-ui,sans-serif';g.fillText(STAT[t.status],70,287);
+    t.tex.needsUpdate=true;t.drawn=t.status+':'+(hl?1:0);
+  }
+  var tiles=SURF.map(function(it,i){
+    var cv=document.createElement('canvas');cv.width=512;cv.height=340;
+    var tex=new T.CanvasTexture(cv);tex.anisotropy=4;
+    var mat=reg(new T.MeshBasicMaterial({map:tex,depthWrite:false}),1);
+    var mesh=new T.Mesh(new T.PlaneGeometry(1.45,.96),mat);mesh.userData.i=i;ring.add(mesh);
+    var t={i:i,cv:cv,tex:tex,mat:mat,mesh:mesh,status:0,base:i/SURF.length*Math.PI*2,sc:1,pop:0,drawn:'',doneAt:0};
+    return t;
+  });
+  function redrawAll(){tiles.forEach(function(t){drawTile(t,t.i===sel&&selW>.5)})}
+
+  /* particles */
+  function pts(n,rmin,rmax,col,size,op){
+    var pos=new Float32Array(n*3);
+    for(var i=0;i<n;i++){var r=rmin+Math.random()*(rmax-rmin),a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1);pos[i*3]=r*Math.sin(b)*Math.cos(a);pos[i*3+1]=r*Math.cos(b)*.7;pos[i*3+2]=r*Math.sin(b)*Math.sin(a)}
+    var g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));
+    var m=reg(new T.PointsMaterial({color:col,size:size,map:spriteTex,depthWrite:false,blending:T.AdditiveBlending,sizeAttenuation:true}),op);
+    var p=new T.Points(g,m);world.add(p);return p;
+  }
+  var mobile=Math.min(innerWidth,innerHeight)<700;
+  var dust=pts(mobile?350:800,6,18,0x9fb4ff,.09,.6);
+  var thr=pts(mobile?60:120,7,10,AMB,.22,1);
+  var tv=[];for(var q=0;q<thr.geometry.attributes.position.count;q++)tv.push({s:1.2+Math.random()*1.6,d:0});
+  function respawn(i){var p=thr.geometry.attributes.position,r=8+Math.random()*3,a=Math.random()*Math.PI*2,e=(Math.random()-.5)*1.2;p.setXYZ(i,Math.cos(a)*r,e*3,Math.sin(a)*r);}
+  for(var z=0;z<tv.length;z++)respawn(z);
+
+  /* shield */
+  var shield=new T.Group();world.add(shield);
+  var shW=reg(new T.MeshBasicMaterial({color:MINT,wireframe:true}),.5);
+  shield.add(new T.Mesh(new T.IcosahedronGeometry(3.5,2),shW));
+  var shF=reg(new T.MeshBasicMaterial({color:MINT,blending:T.AdditiveBlending,depthWrite:false,side:T.BackSide}),.07);
+  shield.add(new T.Mesh(new T.SphereGeometry(3.45,32,24),shF));
+  shield.position.y=.6;
+  var shPulse=0;
+
+  /* keys */
+  var KEYS=[
+    {id:"hero",    cam:[3.2,3.4,12.5],ring:1.12,  tileA:.85,threat:0,shield:0,beam:.75,dim:1,lap:0},
+    {id:'why',     cam:[-4,1.6,11],   ring:1.55,tileA:0,  threat:1,shield:0,beam:0,dim:.85,lap:.85},
+    {id:'surfaces',cam:[0,4,12],      ring:1,  tileA:1,  threat:0,shield:0,beam:.9,dim:1,lap:1},
+    {id:'how',     cam:[5,2.6,11.5], ring:.9, tileA:.15,threat:0,shield:0,beam:.4,dim:.5,lap:0},
+    {id:'agents',  cam:[-3,3,12.5],   ring:1.4,tileA:0,  threat:.4,shield:0,beam:.1,dim:.3,lap:.25},
+    {id:'safe',    cam:[0,1.6,12.5], ring:1.3,tileA:0,  threat:1,shield:1,beam:.1,dim:.6,lap:.3},
+    {id:'get',     cam:[2,2.6,12.5], ring:1,  tileA:0,  threat:0,shield:.6,beam:.2,dim:.28,lap:.1}
+  ];
+  var keyEls=KEYS.map(function(k){return document.getElementById(k.id)}),centers=[];
+  var W=1,H=1,P=false;
+  function measure(){centers=keyEls.map(function(el){var r=el.getBoundingClientRect();return r.top+scrollY+r.height/2})}
+  function anchorFor(id){
+    if(P)return id==='hero'?[.5,.88]:[.5,.2];
+    if(id==='get')return [.5,.5];
+    return [.72,.52];
+  }
+  var NUM=['ring','tileA','threat','shield','beam','dim','lap'];
+  var cur={cam:[3,3,12],ring:1,tileA:1,threat:0,shield:0,beam:.7,dim:1,lap:0,ax:.7,ay:.52,laptop:0,w:{},selW:0,heroW:1};
+  var selW=0;
+  function target(){
+    var y=scrollY+innerHeight/2,i=0;
+    while(i<KEYS.length-2&&y>centers[i+1])i++;
+    var span=Math.max(1,centers[i+1]-centers[i]),f=sm(clamp((y-centers[i])/span,0,1));
+    var a=KEYS[i],b=KEYS[i+1],o={cam:[0,0,0],w:{}};
+    for(var k=0;k<3;k++)o.cam[k]=lerp(a.cam[k],b.cam[k],f);
+    NUM.forEach(function(n){o[n]=lerp(a[n],b[n],f)});
+    var aa=anchorFor(a.id),ab=anchorFor(b.id);o.ax=lerp(aa[0],ab[0],f);o.ay=lerp(aa[1],ab[1],f);
+    KEYS.forEach(function(k){o.w[k.id]=0});o.w[a.id]=1-f;o.w[b.id]=f;
+    return o;
+  }
+  var heroArt=$('#heroArt'),bgPlan=$('#bgPlan'),bgShield=$('#bgShield');
+  var HA={x:.62,y:.5,r:1.5};
+  function placeHero(ax,ay){
+    var w=Math.min(W*(P?1.6:.82),H*(P?1.7:1.55)),h=w/HA.r;
+    heroArt.style.width=w+'px';heroArt.style.height=h+'px';
+    heroArt.style.left=(ax*W-HA.x*w)+'px';heroArt.style.top=(ay*H-HA.y*h)+'px';
+    return w;
+  }
+  var ringPx=1;
+  function resize(){
+    W=innerWidth;H=innerHeight;P=W/H<1.02;
+    var dpr=Math.min(window.devicePixelRatio||1,mobile?1.5:1.75);
+    renderer.setPixelRatio(dpr);renderer.setSize(W,H,false);
+    camera.aspect=W/H;camera.updateProjectionMatrix();
+    var hw=placeHero.apply(null,anchorFor('hero'));
+    ringPx=P?W*.33:hw*.26;
+    measure();
+  }
+  var dirty=true;
+
+  /* selection & picking */
+  var rot=0,rotT=null;
+  onSelect=function(i,fromGL){
+    rotT=null;dirty=true;
+  };
+  var ray=new T.Raycaster(),mouse=new T.Vector2(),px=0,py=0;
+  function pick(e){
+    var r=canvas.getBoundingClientRect();mouse.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+    ray.setFromCamera(mouse,camera);
+    var hit=ray.intersectObjects(tiles.map(function(t){return t.mesh}))[0];
+    return hit?hit.object.userData.i:-1;
+  }
+  function free(e){return !(e.target&&e.target.closest&&e.target.closest('a,button,input,.panel,.chips,.mock,.verify,.cmp,.code,.gap,.note,.ag,.prom,.steps,.bar'))}
+  window.addEventListener('pointermove',function(e){
+    px=(e.clientX/W-.5);py=(e.clientY/H-.5);
+    document.body.style.cursor=(selW>.5&&free(e)&&pick(e)>=0)?'pointer':'';
+  },{passive:true});
+  window.addEventListener('click',function(e){if(selW<.5||!free(e))return;var i=pick(e);if(i>=0)select(i,true)});
+
+  /* screen texture */
+  var lastScr=0;
+  function drawScreen(t){
+    var g=sx,w=1024,h=640;
+    var gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#0a1238');gr.addColorStop(1,'#050820');g.fillStyle=gr;g.fillRect(0,0,w,h);
+    g.fillStyle='#6be4ff';g.font='700 34px "Bricolage Grotesque",system-ui,sans-serif';g.fillText('Security briefing',44,70);
+    g.fillStyle='rgba(255,255,255,.08)';g.fillRect(44,92,w-88,2);
+    var done=tiles.filter(function(t){return t.status>=2}).length;
+    g.fillStyle='rgba(107,228,255,.18)';g.fillRect(44,106,w-88,10);g.fillStyle='#6be4ff';g.fillRect(44,106,(w-88)*done/SURF.length,10);
+    for(var i=0;i<8;i++){var t0=tiles[i],y=170+i*50,c=SCOL[t0.status];
+      g.fillStyle=c;g.beginPath();g.arc(58,y-8,8,0,6.3);g.fill();
+      g.fillStyle=t0.status?'#eaf0ff':'#6c78a8';g.font='500 29px "Hanken Grotesk",system-ui,sans-serif';g.fillText(SURF[i].n,86,y);
+      g.fillStyle=c;g.textAlign='right';g.font='600 24px "Hanken Grotesk",system-ui,sans-serif';g.fillText(STAT[t0.status],w-50,y);g.textAlign='left';}
+    g.fillStyle='#46e6a6';g.font='600 26px "Hanken Grotesk",system-ui,sans-serif';g.fillText('Changes made to your Mac: none',44,h-36);
+    scrTex.needsUpdate=true;
+  }
+
+  /* resets and demo cycle */
+  var beamA=0,allDoneT=0,time=0,lastT=performance.now();
+  function setStatic(){tiles.forEach(function(t){t.status=t.i===EXAMPLE_FLAG?3:2})}
+  function frame(now){
+    var dt=Math.min(.05,(now-lastT)/1000);lastT=now;if(RM)dt=0;time+=dt;
+    var tg=target();
+    var kk=RM?1:1-Math.exp(-dt*3.2);
+    for(var k=0;k<3;k++)cur.cam[k]=lerp(cur.cam[k],tg.cam[k],kk);
+    NUM.concat(['ax','ay']).forEach(function(n){cur[n]=lerp(cur[n],tg[n],kk)});
+    cur.w=tg.w;
+    var heroW=tg.w.hero||0;cur.laptop=lerp(cur.laptop,Math.min(1-heroW,tg.lap),kk);
+    var secW=tg.w.surfaces||0;selW=lerp(selW,secW,kk);
+
+    // camera + anchor
+    var cx=cur.cam[0]+px*1.2,cy=cur.cam[1]-py*.8,cz=cur.cam[2];
+    camera.position.set(cx,cy,cz);camera.lookAt(0,.2,0);
+    var dist=Math.sqrt(cx*cx+cy*cy+cz*cz),ppu=H/(2*dist*Math.tan(camera.fov*Math.PI/360));
+    var s=ringPx/(ppu*R);world.scale.setScalar(s);
+    var dx=cur.ax*W-W/2,dy=cur.ay*H-H/2;camera.setViewOffset(W,H,-dx,-dy,W,H);
+    camera.updateProjectionMatrix();
+
+    // layers
+    heroArt.style.opacity=clamp(heroW*1.05,0,1).toFixed(3);
+    var hdx=cur.ax;placeHero(cur.ax,cur.ay);
+    bgPlan.style.opacity=(.42*((tg.w.surfaces||0)+(tg.w.how||0)*.7)).toFixed(3);
+    bgShield.style.opacity=(.55*((tg.w.safe||0)+(tg.w.get||0)*.55)).toFixed(3);
+    canvas.style.pointerEvents=selW>.5?'auto':'none';canvas.style.opacity=(cur.dim*(P?.8:1)).toFixed(3);
+
+    // fade materials
+    var lapA=cur.laptop;
+    fades.forEach(function(m){m.opacity=m.userData.base*(m.userData.grp==='t'?cur.tileA:1)});
+    laptop.visible=lapA>.01;
+    [base,lid].forEach(function(g){g.children.forEach(function(c){var m=c.material;m.opacity=m.userData.base*lapA})});
+    kbm.opacity=.55*lapA;tp.material.opacity=.22*lapA;scrMat.opacity=lapA;
+    tiles.forEach(function(t){t.mat.opacity=cur.tileA*(1)});
+    var rawFloor=lapA;
+    world.children.forEach(function(c){if(c.type==='Line'){c.material.opacity=c.material.userData.base*(.4+.6*cur.beam)}});
+    bm.uniforms.uA.value=cur.beam;beam.visible=cur.beam>.02;
+    shW.opacity=.34*cur.shield;shF.opacity=(.07+shPulse*.18)*cur.shield;shield.visible=cur.shield>.02;shield.rotation.y+=dt*.12;shield.rotation.x=Math.sin(time*.3)*.1;
+    shPulse=Math.max(0,shPulse-dt*2.4);
+    thr.material.opacity=Math.min(1,cur.threat);thr.visible=cur.threat>.02;
+    dust.material.opacity=.6;
+    dust.rotation.y+=dt*.02;
+
+    // laptop float
+    laptop.position.y=-.9+Math.sin(time*.8)*.06;laptop.rotation.y=Math.sin(time*.25)*.12-.1;
+
+    // ring rotation + beam + statuses
+    var selActive=selW>.5;
+    if(selActive){
+      var want=-Math.PI/2-tiles[sel].base;want=Math.atan2(Math.sin(want-rot),Math.cos(want-rot))+rot;
+      rot=lerp(rot,want,1-Math.exp(-dt*3.5));
+    }else rot+=dt*.09;
+    ring.rotation.y=rot;
+    beamA+=dt*(selActive?.55:.8);beam.rotation.y=beamA;
+    var lead=beamA+beamL,doneAll=true;
+    tiles.forEach(function(t){
+      if(!RM){
+        if(t.status===0){var d=((lead-(t.base+rot))%(Math.PI*2)+Math.PI*2)%(Math.PI*2);if(d<.22){t.status=1;t.doneAt=time+.5+Math.random()*.4;t.pop=1}}
+        else if(t.status===1&&time>t.doneAt){t.status=t.i===EXAMPLE_FLAG?3:2;t.pop=1}
+      }
+      if(t.status<2)doneAll=false;
+    });
+    if(!RM){if(doneAll){allDoneT+=dt;if(allDoneT>4.5){tiles.forEach(function(t){t.status=0});allDoneT=0}}else allDoneT=0}
+    var rad=R*cur.ring;
+    tiles.forEach(function(t,i){
+      var a=t.base,isSel=selActive&&i===sel;
+      t.pop=Math.max(0,t.pop-dt*2.2);
+      var tsc=(isSel?1.18:1)+Math.sin(t.pop*Math.PI)*.18;t.sc=lerp(t.sc,tsc,1-Math.exp(-dt*8));
+      t.mesh.position.set(Math.cos(a)*rad,.3+Math.sin(time*.9+i)*.12+(isSel?.2:0),-Math.sin(a)*rad);
+      t.mesh.scale.setScalar(t.sc);
+      t.mesh.lookAt(camera.position);
+      var key=t.status+':'+(isSel?1:0);if(t.drawn!==key)drawTile(t,isSel);
+    });
+
+    // threats
+    var tp2=thr.geometry.attributes.position;
+    if(cur.threat>.02&&!RM)for(var m=0;m<tv.length;m++){
+      var x=tp2.getX(m),y=tp2.getY(m),zz=tp2.getZ(m),L=Math.sqrt(x*x+y*y+zz*zz)||1,sp=tv[m].s*dt*1.5;
+      x-=x/L*sp;y-=y/L*sp*.8;zz-=zz/L*sp;tp2.setXYZ(m,x,y,zz);
+      var stop=cur.shield>.5?3.6:1.2;
+      if(L<stop){if(cur.shield>.5)shPulse=1;respawn(m)}
+    }
+    tp2.needsUpdate=true;
+
+    // screen
+    if(lapA>.02&&now-lastScr>140){lastScr=now;drawScreen(time)}
+
+    renderer.render(scene,camera);
+  }
+  /* tag tile materials for tileA scaling */
+  tiles.forEach(function(t){t.mat.userData.grp='t'});
+
+  resize();
+  var ro;addEventListener('resize',function(){resize();dirty=true});
+  addEventListener('load',measure);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){tiles.forEach(function(t){t.drawn=''});measure();dirty=true});
+  if(RM){
+    setStatic();
+    var pend=false;function once(){if(pend)return;pend=true;requestAnimationFrame(function(){pend=false;frame(performance.now())})}
+    addEventListener('scroll',once,{passive:true});addEventListener('resize',once);once();
+    document.fonts&&document.fonts.ready.then(function(){once()});
+    return true;
+  }
+  var running=true;
+  document.addEventListener('visibilitychange',function(){running=!document.hidden;lastT=performance.now()});
+  (function loop(now){requestAnimationFrame(loop);if(running)frame(now||performance.now())})();
+  window.__sweepGL={tiles:tiles,cur:cur};
+  return true;
+}
+var ok=false;
+try{ok=initGL()}catch(e){if(window.console)console.warn('GL failed',e);ok=false}
+if(!ok)document.documentElement.classList.add('nogl');
+})();
+
+</script>
+</body>
+</html>
