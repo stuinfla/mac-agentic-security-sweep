@@ -793,6 +793,7 @@ function initGL(){
   function anchorFor(id){
     if(P)return id==='hero'?[.5,.88]:[.5,.2];
     if(id==='get')return [.5,.5];
+    if(id==='hero')return [.79,.52];
     return [.72,.52];
   }
   var NUM=['ring','tileA','threat','shield','beam','dim','lap'];
@@ -812,7 +813,7 @@ function initGL(){
   var heroArt=$('#heroArt'),bgPlan=$('#bgPlan'),bgShield=$('#bgShield');
   var HA={x:.62,y:.5,r:1.5};
   function placeHero(ax,ay){
-    var w=Math.min(W*(P?1.6:.82),H*(P?1.7:1.55)),h=w/HA.r;
+    var w=Math.min(W*(P?1.6:.76),H*(P?1.7:1.55)),h=w/HA.r;
     heroArt.style.width=w+'px';heroArt.style.height=h+'px';
     heroArt.style.left=(ax*W-HA.x*w)+'px';heroArt.style.top=(ay*H-HA.y*h)+'px';
     return w;
@@ -824,7 +825,7 @@ function initGL(){
     renderer.setPixelRatio(dpr);renderer.setSize(W,H,false);
     camera.aspect=W/H;camera.updateProjectionMatrix();
     var hw=placeHero.apply(null,anchorFor('hero'));
-    ringPx=P?W*.33:hw*.26;
+    ringPx=P?W*.33:hw*.21;
     measure();
   }
   var dirty=true;
