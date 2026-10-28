@@ -44,6 +44,10 @@ p{text-wrap:pretty}
 #gl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;transition:none;display:block;touch-action:pan-y}
 .grain{position:absolute;inset:0;opacity:.06;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");mix-blend-mode:overlay}
 
+.update{display:inline-block;margin:0 0 1.1em;padding:.55em 1em;border-radius:999px;border:1px solid rgba(255,181,71,.5);background:rgba(255,181,71,.12);color:#ffd9a0;font-size:.9rem;font-weight:600;text-shadow:none}
+.update a{color:#fff;text-underline-offset:3px}
+.updbox{margin:0 auto 1.6em;max-width:36rem;padding:14px 18px;border-radius:14px;border:1px solid rgba(255,181,71,.45);background:rgba(255,181,71,.1);color:#ffe2b3;font-size:.95rem;text-align:left}
+.updbox strong{color:#fff}
 /* top bar */
 .bar{position:fixed;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px var(--gut);transition:background .3s,backdrop-filter .3s}
 .bar.solid{background:rgba(5,7,26,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
@@ -305,6 +309,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 <section class="sec hero" id="hero">
   <div class="wrap" style="width:100%">
     <div class="col">
+      <p class="update">New version, updated Oct 27. Downloaded it before? <a href="#get">Download it again</a> and rerun it.</p>
       <h1 aria-label="A quick security briefing for your Mac.">
         <span class="ln"><span>A quick security</span></span>
         <span class="ln"><span>briefing for</span></span>
@@ -485,6 +490,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
   <div class="wrap">
     <h2>Find out what your Mac is exposing.</h2>
     <p class="lede">Free. You need a Mac and Claude Code. Nothing changes unless you approve it.</p>
+    <div class="updbox"><strong>New version, updated Oct 27.</strong> If you downloaded the kit earlier, please download it again and rerun it. The new version fixes a check that could fail, and the one-line prompt now picks your newest download.</div>
     <div class="cta-row">
       <a class="btn pri" href="Mac-Claude-Security-Sweep.zip" download>Download the free kit</a>
       <a class="btn ghost" href="#safe">Check it first</a>

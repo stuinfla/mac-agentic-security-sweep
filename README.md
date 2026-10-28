@@ -1,3 +1,5 @@
+> **New version, updated Oct 27, 2026.** If you downloaded the kit earlier, please download it again and rerun it. The new version fixes a check that could fail, and the one-line prompt now picks your newest download.
+
 <p align="center">
   <img src="assets/hero.svg" alt="Mac Agentic Security Sweep" width="900">
 </p>
