@@ -78,7 +78,7 @@ You need a Mac on macOS 13 or later, your admin password, 30 to 60 minutes, and 
 3. **Open Terminal**, paste this one line, press Return:
 
 ```bash
-cd ~ && claude "Find Mac-Claude-Security-Sweep in my Downloads folder (zip or already-unzipped folder), unpack it into my home folder as ~/mac-claude-security-sweep, then read START-HERE.md and AUDIT-BRIEF.md and run the sweep from Phase 0. Scan read-only; change nothing unless I approve it item by item in the cleanup step."
+cd ~ && claude "Find the most recently downloaded Mac-Claude-Security-Sweep in my Downloads folder (zip or already-unzipped folder; there may be older copies, names can end in (1)), unpack it into my home folder as ~/mac-claude-security-sweep, then read START-HERE.md and AUDIT-BRIEF.md and run the sweep from Phase 0. Scan read-only; change nothing unless I approve it item by item in the cleanup step."
 ```
 
 Claude takes it from there. When you are done, turn Terminal's Full Disk Access back off and delete the `results` folder.
@@ -92,7 +92,7 @@ shasum -a 256 ~/Downloads/Mac-Claude-Security-Sweep.zip
 It should print:
 
 ```
-bdaa3083b3ff9b9e2c2d76fcc0092d2891aa9e1c2b772dedc1c26e315312cf1a
+cef787e0d4b50a610a7d8cb34398814fc4b6dc2850c5fb3899a9711f435b1d4a
 ```
 
 A matching fingerprint proves the file was not damaged or swapped in transit. It does not replace reading the scripts. They are short, and the whole point is that you can.

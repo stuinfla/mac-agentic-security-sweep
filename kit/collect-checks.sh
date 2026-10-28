@@ -56,7 +56,7 @@ with_timeout() {
   _wt_o="$(mktemp "$_wt_d/sweep-out.XXXXXX" 2>/dev/null)" || _wt_o=""
   _wt_e="$(mktemp "$_wt_d/sweep-err.XXXXXX" 2>/dev/null)" || _wt_e=""
   if [ -n "$_wt_o" ] && [ -n "$_wt_e" ]; then
-    "$@" >"$_wt_o" 2>"$_wt_e" &
+    "$@" >|"$_wt_o" 2>|"$_wt_e" &   # >| so it still works when the shell has noclobber set
   else
     "$@" &   # no temp file available: output passes straight through
   fi

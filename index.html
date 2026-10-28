@@ -468,7 +468,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
         <h3>Check it yourself</h3>
         <p>Run these in Terminal after the Claude prompt has unpacked the kit. First type <code>cd ~</code>. They check the kit in your home folder, and the zip in Downloads.</p>
         <div class="code"><small>1. The zip is the one we published. This should print the fingerprint below.</small><span id="c1">shasum -a 256 ~/Downloads/Mac-Claude-Security-Sweep.zip</span><button class="copy" data-c="c1" aria-label="Copy command 1">Copy</button></div>
-        <div class="code"><small>Expected fingerprint</small><span class="hash">bdaa3083b3ff9b9e2c2d76fcc0092d2891aa9e1c2b772dedc1c26e315312cf1a</span></div>
+        <div class="code"><small>Expected fingerprint</small><span class="hash">cef787e0d4b50a610a7d8cb34398814fc4b6dc2850c5fb3899a9711f435b1d4a</span></div>
         <div class="code"><small>2. Nothing in the scripts phones home. Expect one match: a search pattern, not a command.</small><span id="c2">grep -nE '(^|[;&amp;|(] *)(curl|wget|nc|scp|sftp|rsync|ssh)( |$)' mac-claude-security-sweep/collect-checks.sh mac-claude-security-sweep/sudo-checks.sh</span><button class="copy" data-c="c2" aria-label="Copy command 2">Copy</button></div>
         <div class="code"><small>3. See every place the scripts could change a file. Expect only: stopping its own timed-out checks, tidying its own temp and result files, and setting ownership and permissions on the results folder.</small><span id="c3">grep -nE '\b(rm|mv|chmod|chown|kill|defaults write)\b' mac-claude-security-sweep/collect-checks.sh mac-claude-security-sweep/sudo-checks.sh</span><button class="copy" data-c="c3" aria-label="Copy command 3">Copy</button></div>
       </div>
@@ -499,7 +499,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
         <li><div><strong>Download the kit</strong><span>It lands in your Downloads folder. If Safari unzips it for you, that is fine; Claude finds either.</span></div></li>
         <li><div><strong>Paste this into Claude Code</strong><span>Claude unpacks the kit, runs the sweep, and walks you through the report.</span></div></li>
       </ol>
-      <div class="code"><span id="c4">cd ~ &amp;&amp; claude "Find Mac-Claude-Security-Sweep in my Downloads folder (zip or already-unzipped folder), unpack it into my home folder as ~/mac-claude-security-sweep, then read START-HERE.md and AUDIT-BRIEF.md and run the sweep from Phase 0. Scan read-only; change nothing unless I approve it item by item in the cleanup step."</span><button class="copy" data-c="c4" aria-label="Copy the Claude Code prompt">Copy</button></div>
+      <div class="code"><span id="c4">cd ~ &amp;&amp; claude "Find the most recently downloaded Mac-Claude-Security-Sweep in my Downloads folder (zip or already-unzipped folder; there may be older copies, names can end in (1)), unpack it into my home folder as ~/mac-claude-security-sweep, then read START-HERE.md and AUDIT-BRIEF.md and run the sweep from Phase 0. Scan read-only; change nothing unless I approve it item by item in the cleanup step."</span><button class="copy" data-c="c4" aria-label="Copy the Claude Code prompt">Copy</button></div>
       <ol><li><div><strong>Read your briefing</strong><span>Fix what you want, skip what you don't, and keep the report for next time.</span></div></li></ol>
     </div>
   </div>

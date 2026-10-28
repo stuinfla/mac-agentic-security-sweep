@@ -12,7 +12,7 @@ A **read-only** security check for your Mac, run with Claude's help. It looks fo
 2. **Download** `Mac-Claude-Security-Sweep.zip` and leave it in your Downloads folder, even if your Mac unzips it automatically.
 3. **Open Terminal**, paste this one line and press Return:
    ```bash
-   cd ~ && claude "Find Mac-Claude-Security-Sweep in my Downloads folder (zip or already-unzipped folder), unpack it into my home folder as ~/mac-claude-security-sweep, then read START-HERE.md and AUDIT-BRIEF.md and run the sweep from Phase 0. Scan read-only; change nothing unless I approve it item by item in the cleanup step."
+   cd ~ && claude "Find the most recently downloaded Mac-Claude-Security-Sweep in my Downloads folder (zip or already-unzipped folder; there may be older copies, names can end in (1)), unpack it into my home folder as ~/mac-claude-security-sweep, then read START-HERE.md and AUDIT-BRIEF.md and run the sweep from Phase 0. Scan read-only; change nothing unless I approve it item by item in the cleanup step."
    ```
 
 ## What happens next
